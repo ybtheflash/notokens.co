@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="pieOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff9838"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="1.2" flood-color="#f97316" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Dark container background for high visibility on light & dark browser tabs -->
+  <rect width="32" height="32" rx="7" fill="#09090b"/>
+  <rect width="30" height="30" x="1" y="1" rx="6" fill="none" stroke="rgba(255, 255, 255, 0.08)" stroke-width="1"/>
+
+  <!-- Inactive Track -->
+  <circle 
+    cx="16" 
+    cy="16" 
+    r="9.5" 
+    fill="none" 
+    stroke="#27272a" 
+    stroke-width="3" 
+  />
+
+  <!-- Active 69% Token Stroke with Orange Glow -->
+  <circle 
+    cx="16" 
+    cy="16" 
+    r="9.5" 
+    fill="none" 
+    stroke="url(#pieOrange)" 
+    stroke-width="3" 
+    stroke-linecap="round"
+    stroke-dasharray="59.69"
+    stroke-dashoffset="18.5"
+    transform="rotate(-90 16 16)"
+    filter="url(#glow)"
+  />
+
+  <!-- Subtle Center Core Dot -->
+  <circle cx="16" cy="16" r="2.2" fill="#f97316" opacity="0.85"/>
+</svg>

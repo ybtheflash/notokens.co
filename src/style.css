@@ -1,0 +1,57 @@
+:root {
+  --color-bg: #111113; /* muted charcoal black */
+  --color-card-bg: #18181c;
+  --color-card-border: rgba(255, 255, 255, 0.08);
+  --color-text: #f3f4f6; /* lightest shade of grey */
+  --color-text-muted: #9ca3af;
+  --color-accent: #f97316; /* vibrant orange */
+  --color-pie-full: #f97316;
+  --color-pie-empty: #f97316;
+  --color-pie-bg: #222228;
+  --color-hero-font: #ffedd5; /* lightest orange cream */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a, a:visited, a:active, a:focus {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 1.25rem;
+  }
+}
