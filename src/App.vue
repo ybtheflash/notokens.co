@@ -488,7 +488,6 @@ const bubbleParticles = [
   width: 100%;
   position: relative;
   background-color: var(--color-bg);
-  overflow-x: hidden;
 }
 
 /* Navbar */
@@ -1255,6 +1254,7 @@ const bubbleParticles = [
   pointer-events: none;
   z-index: 1;
   transform: translateZ(0);
+  overflow: hidden;
 }
 
 .abyss-glow {
