@@ -1067,22 +1067,16 @@ onUnmounted(() => {
         >
           <template v-if="attachment.mime_type.startsWith('image/')">
             <div
-              v-if="getAttachmentImageStatus(attachment.path) === 'loading'"
+              v-if="!signedUrls[attachment.path] && getAttachmentImageStatus(attachment.path) !== 'error'"
               class="attachment-skeleton absolute inset-0"
               role="status"
               :aria-label="`Loading ${attachment.name}`"
             ></div>
             <img
-              v-if="signedUrls[attachment.path]"
+              v-if="signedUrls[attachment.path] && getAttachmentImageStatus(attachment.path) !== 'error'"
               :src="signedUrls[attachment.path]"
               :alt="attachment.name"
-              class="w-full h-full object-cover cursor-pointer transition-opacity duration-200"
-              :class="
-                getAttachmentImageStatus(attachment.path) === 'loaded'
-                  ? 'opacity-100'
-                  : 'opacity-0'
-              "
-              @load="setAttachmentImageStatus(attachment.path, 'loaded')"
+              class="w-full h-full object-cover cursor-pointer"
               @error="setAttachmentImageStatus(attachment.path, 'error')"
               @click="openAttachment(attachment)"
             />

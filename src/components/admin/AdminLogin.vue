@@ -37,9 +37,9 @@ const submit = async () => {
         >
           <StickyNote class="w-6 h-6 text-amber-300" />
         </div>
-        <h1 class="text-2xl font-bold text-white tracking-tight">Founder Notes</h1>
+        <h1 class="text-2xl font-bold text-white tracking-tight">Founder's Space</h1>
         <p class="mt-2 text-sm text-gray-500">
-          Shared workspace for the founding team. Enter your password.
+          Enter your password.
         </p>
       </div>
 
@@ -68,11 +68,11 @@ const submit = async () => {
           class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-amber-300 text-[#17130a] text-sm font-bold hover:bg-amber-200 disabled:opacity-50 transition-colors"
         >
           <Loader2 v-if="isSubmitting" class="w-4 h-4 animate-spin" />
-          Unlock workspace
+          Unlock
         </button>
 
         <p class="text-[11px] text-gray-600 text-center leading-5">
-          No username. Whichever founder password matches signs you in as that person.
+          Your password, your space uwu.
         </p>
       </form>
     </div>

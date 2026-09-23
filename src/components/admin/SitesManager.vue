@@ -31,13 +31,15 @@ function apiBase() {
 async function api(path: string, init?: RequestInit) {
   const token = adminAuth.getToken()
   const anonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY as string) || ''
-  const authToken = token || anonKey
+  if (!token) {
+    throw new Error('Please log in as a founder to manage sites.')
+  }
   const res = await fetch(`${apiBase()}/functions/v1/notes-api${path}`, {
     ...init,
     headers: {
       'Content-Type': 'application/json',
       apikey: anonKey,
-      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+      Authorization: `Bearer ${token}`,
       ...(init?.headers || {}),
     },
   })
