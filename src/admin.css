@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Admin-only shell — notokens charcoal + amber accent */
+.admin-shell {
+  min-height: 100vh;
+  background: #111113;
+  color: #f3f4f6;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+.admin-shell .ql-toolbar.ql-snow {
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 0.35rem 1rem;
+}
+
+.admin-shell .ql-container.ql-snow {
+  border: 0;
+  color: #e5e7eb;
+  font-family: inherit;
+  min-height: 130px;
+}
+
+.admin-shell .ql-editor {
+  min-height: 130px;
+  padding: 0.8rem 1.25rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.admin-shell .ql-editor.ql-blank::before {
+  color: #4b5563;
+  font-style: normal;
+  left: 1.25rem;
+}
+
+.admin-shell .ql-snow .ql-stroke {
+  stroke: #6b7280;
+}
+
+.admin-shell .ql-snow .ql-fill {
+  fill: #6b7280;
+}
+
+.admin-shell .ql-snow button:hover .ql-stroke,
+.admin-shell .ql-snow button.ql-active .ql-stroke {
+  stroke: #fcd34d;
+}

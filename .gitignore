@@ -22,3 +22,13 @@ NoTokens.md
 *.njsproj
 *.sln
 *.sw?
+supabase/
+supabase/.branches
+supabase/config.toml
+.env
+.env.local
+.env.*.local
+.env.example
+docs/
+FounderNotes.md
+scripts/
