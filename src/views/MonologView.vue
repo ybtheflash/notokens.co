@@ -12,7 +12,6 @@ import {
   Eye,
   EyeOff,
   Mic,
-  Check,
   ChevronDown,
   Clock,
   Bell,
@@ -1048,43 +1047,61 @@ const closeModal = () => {
         </div>
 
         <div class="pricing-showcase-container">
-          <div class="pricing-header-wrap">
-            <div class="pricing-badge-row">
-              <img src="/monolog/monolog-logo.svg" alt="Monolog" class="pricing-logo-icon" />
-              <span class="pricing-badge-text">MONOLOG PLANS</span>
+          <!-- Compact Header Row: Title & Subtitle + Billing Switcher -->
+          <div class="pricing-compact-header">
+            <div class="pricing-title-col">
+              <div class="pricing-badge-row">
+                <img src="/monolog/monolog-logo.svg" alt="Monolog" class="pricing-logo-icon" />
+                <span class="pricing-badge-text">MONOLOG PLANS</span>
+              </div>
+              <h3 class="pricing-main-title">More voice. Better words.</h3>
+              <p class="pricing-sub-title">Choose your Monolog plan. The core keyboard, on-device Gemma dictation, and encrypted local journal are always free.</p>
             </div>
-            <h3 class="pricing-main-title">More voice. Better words.</h3>
-            <p class="pricing-sub-title">Choose your Monolog plan. The core keyboard, on-device Gemma speech formatting, and encrypted local journal are always free.</p>
+
+            <!-- Billing Toggle Switch & Restore Link -->
+            <div class="pricing-header-actions">
+              <div class="billing-switch-pills">
+                <button 
+                  class="b-pill-btn" 
+                  :class="{ active: billingCycle === 'monthly' }"
+                  @click="billingCycle = 'monthly'"
+                >
+                  <span>Monthly</span>
+                  <span class="b-pill-rate">₹299/mo</span>
+                </button>
+                <button 
+                  class="b-pill-btn" 
+                  :class="{ active: billingCycle === 'yearly' }"
+                  @click="billingCycle = 'yearly'"
+                >
+                  <span class="b-save-tag">Save 6%</span>
+                  <span>Yearly</span>
+                  <span class="b-pill-rate">₹281/mo</span>
+                </button>
+              </div>
+              <button class="plan-restore-link" @click="triggerRestore">Restore purchases</button>
+            </div>
           </div>
 
-          <div class="pricing-split-layout">
-            <!-- Left: Interactive Mobile Screen Recreation -->
-            <div class="pricing-phone-card frosted-glass-panel">
-              <!-- Top bar inside phone card -->
-              <div class="plan-phone-header">
-                <button class="plan-back-btn" aria-label="Back">
-                  <ArrowLeft :size="16" />
-                </button>
-                <div class="plan-brand-pill">
-                  <img src="/monolog/monolog-logo.svg" alt="Monolog" class="plan-logo-img" />
-                  <span class="plan-brand-name">monolog</span>
+          <!-- Wide Two-Tier Plans Grid (Takes Full Wide Space, Low Vertical Height) -->
+          <div class="pricing-wide-grid">
+            <!-- Tier 1: Free Card -->
+            <div class="plan-card-wide free-card frosted-glass-panel">
+              <div class="p-card-top">
+                <div class="p-tier-badge-row">
+                  <span class="p-tier-name">Free</span>
+                  <span class="p-tier-tag">Forever</span>
                 </div>
-                <button class="plan-restore-btn" @click="triggerRestore">Restore</button>
+                <div class="p-price-block">
+                  <span class="p-price-val">₹0</span>
+                  <span class="p-price-period">/ month</span>
+                </div>
+                <p class="p-card-desc">Familiar borderless keyboard, encrypted Room memory, and basic voice typing on your phone.</p>
               </div>
 
-              <!-- Title inside phone card -->
-              <div class="plan-phone-headline">
-                <h4>More voice. Better words.</h4>
-                <p>Choose your Monolog plan.</p>
-              </div>
-
-              <!-- Plan 1: Free -->
-              <div class="plan-tier-card free-tier">
-                <div class="plan-tier-header">
-                  <span class="plan-name">Free</span>
-                  <span class="plan-price">₹0</span>
-                </div>
-                <ul class="plan-feature-list">
+              <div class="p-features-block">
+                <span class="p-features-label">INCLUDED IN FREE</span>
+                <ul class="p-feat-list">
                   <li>
                     <span class="feat-icon">
                       <svg class="feat-icon-svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="8" x2="6" y2="8"/><line x1="10" y1="8" x2="10" y2="8"/><line x1="14" y1="8" x2="14" y2="8"/><line x1="18" y1="8" x2="18" y2="8"/><line x1="6" y1="12" x2="6" y2="12"/><line x1="10" y1="12" x2="10" y2="12"/><line x1="14" y1="12" x2="14" y2="12"/><line x1="18" y1="12" x2="18" y2="12"/><line x1="7" y1="16" x2="17" y2="16"/></svg>
@@ -1099,163 +1116,137 @@ const closeModal = () => {
                     <span class="feat-icon"><Cloud :size="15" /></span>
                     <span>Limited monthly Vox &amp; cloud AI pool</span>
                   </li>
+                  <li>
+                    <span class="feat-icon"><Shield :size="15" /></span>
+                    <span>Hardware Keystore encryption &amp; incognito</span>
+                  </li>
                 </ul>
               </div>
 
-              <!-- Plan 2: Monolog Pro (Featured) -->
-              <div class="plan-tier-card pro-tier">
-                <div class="plan-tier-header">
-                  <div class="pro-title-wrap">
-                    <span class="plan-name">Monolog Pro</span>
-                    <span class="plan-badge">FEATURED</span>
-                  </div>
-                  <span class="pro-lead-text">Everything in Free, plus</span>
-                </div>
-
-                <ul class="plan-feature-list pro-list">
-                  <li>
-                    <span class="feat-icon"><Mic :size="15" /></span>
-                    <div class="feat-text">
-                      <strong>Vox Pro</strong>
-                      <small>More voice typing, smart punctuation &amp; vocabulary</small>
-                    </div>
-                  </li>
-                  <li>
-                    <span class="feat-icon"><Edit3 :size="15" /></span>
-                    <div class="feat-text">
-                      <strong>Write with confidence</strong>
-                      <small>Grammar fixes, rewrites &amp; tone suggestions</small>
-                    </div>
-                  </li>
-                  <li>
-                    <span class="feat-icon"><Sliders :size="15" /></span>
-                    <div class="feat-text">
-                      <strong>Make it sound like you</strong>
-                      <small>Saved writing styles &amp; reusable instructions</small>
-                    </div>
-                  </li>
-                  <li>
-                    <span class="feat-icon"><Search :size="15" /></span>
-                    <div class="feat-text">
-                      <strong>AI, without switching apps</strong>
-                      <small>More search, screenshot questions &amp; follow-ups</small>
-                    </div>
-                  </li>
-                  <li>
-                    <span class="feat-icon"><BookOpen :size="15" /></span>
-                    <div class="feat-text">
-                      <strong>Ask your memories</strong>
-                      <small>Find answers across journals, notes &amp; context</small>
-                    </div>
-                  </li>
-                  <li>
-                    <span class="feat-icon"><Calendar :size="15" /></span>
-                    <div class="feat-text">
-                      <strong>Relive your month</strong>
-                      <small>Weekly summaries &amp; NNN monthly recaps</small>
-                    </div>
-                  </li>
-                  <li>
-                    <span class="feat-icon"><Layers :size="15" /></span>
-                    <div class="feat-text">
-                      <strong>Do more, effortlessly</strong>
-                      <small>Multi-step routines &amp; beautifully formatted exports</small>
-                    </div>
-                  </li>
-                </ul>
-
-                <!-- Billing Cycle Selector (Monthly / Yearly) -->
-                <div class="plan-billing-selector">
-                  <!-- Monthly Option -->
-                  <div 
-                    class="billing-option-box" 
-                    :class="{ active: billingCycle === 'monthly' }"
-                    @click="billingCycle = 'monthly'"
-                  >
-                    <div class="b-details">
-                      <span class="b-label">Monthly</span>
-                      <span class="b-price">₹299</span>
-                      <span class="b-sub">per month</span>
-                    </div>
-                    <div class="b-radio-circle">
-                      <span v-if="billingCycle === 'monthly'" class="b-radio-dot"></span>
-                    </div>
-                  </div>
-
-                  <!-- Yearly Option -->
-                  <div 
-                    class="billing-option-box" 
-                    :class="{ active: billingCycle === 'yearly' }"
-                    @click="billingCycle = 'yearly'"
-                  >
-                    <div class="b-badge-wrap">
-                      <span class="b-savings-badge">Save 6%</span>
-                    </div>
-                    <div class="b-details">
-                      <span class="b-label">Yearly</span>
-                      <div class="b-price-row">
-                        <span class="b-price">₹281</span>
-                        <span class="b-sub">/ month</span>
-                      </div>
-                      <span class="b-billed-note">₹3,372 billed yearly</span>
-                    </div>
-                    <div class="b-radio-circle checked">
-                      <Check v-if="billingCycle === 'yearly'" :size="13" />
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Savings Banner -->
-                <div class="plan-savings-banner">
-                  <span v-if="billingCycle === 'yearly'">Save ₹216 a year compared with monthly billing.</span>
-                  <span v-else>Billed monthly at ₹299. Switch to Yearly to save ₹216 / year.</span>
-                </div>
-
-                <!-- Always Free Privacy Guarantee -->
-                <div class="plan-privacy-guarantee">
-                  <Shield :size="14" class="guarantee-shield" />
-                  <span>Encryption, incognito &amp; data control — always free.</span>
-                </div>
-
-                <!-- CTA Actions -->
-                <div class="plan-cta-wrap">
-                  <button class="plan-primary-cta" @click="triggerGetPro">
-                    <span>Get Monolog Pro</span>
-                  </button>
-                  <button class="plan-secondary-cta" @click="contextToast = 'Continuing with Monolog Free · Offline Gemma and local journal active'">
-                    Continue with Free
-                  </button>
-                </div>
-
-                <!-- Footer Disclaimer -->
-                <div class="plan-footer-disclaimer">
-                  <p>Renews automatically. Cancel anytime.</p>
-                  <div class="plan-legal-links">
-                    <span>Terms</span>
-                    <span class="dot-sep">•</span>
-                    <span>Privacy</span>
-                  </div>
-                </div>
+              <div class="p-card-footer">
+                <button class="plan-ghost-btn" @click="contextToast = 'Continuing with Monolog Free · Offline Gemma and local journal active'">
+                  Continue with Free
+                </button>
               </div>
             </div>
 
-            <!-- Right: Real High-Res Phone Mockup Showcase (Click to Expand) -->
-            <div class="pricing-asset-showcase">
-              <div class="pricing-mockup-wrapper" @click="openModal('/monolog/pricing-plan.png')">
-                <img 
-                  src="/monolog/pricing-plan.png" 
-                  alt="Monolog Pro Subscription Screen" 
-                  class="pricing-mockup-img" 
-                />
-                <div class="mockup-hover-hint">
-                  <Search :size="14" />
-                  <span>Click to Inspect 1:1 Mobile Render ↗</span>
+            <!-- Tier 2: Monolog Pro (Wide Featured Card with 2-Column Features Grid) -->
+            <div class="plan-card-wide pro-card frosted-glass-panel">
+              <div class="pro-aurora-glow-bg"></div>
+
+              <div class="p-card-top">
+                <div class="p-tier-badge-row">
+                  <div class="pro-title-inline">
+                    <span class="p-tier-name pro-name">Monolog Pro</span>
+                    <span class="pro-highlight-badge">FEATURED</span>
+                  </div>
+                  <span class="pro-savings-inline" v-if="billingCycle === 'yearly'">Save ₹216 / year</span>
+                </div>
+
+                <div class="p-price-block">
+                  <div class="p-price-main">
+                    <span class="p-price-val">{{ billingCycle === 'yearly' ? '₹281' : '₹299' }}</span>
+                    <span class="p-price-period">/ month</span>
+                  </div>
+                  <span class="p-billed-sub">{{ billingCycle === 'yearly' ? '₹3,372 billed yearly' : 'Billed monthly · Cancel anytime' }}</span>
+                </div>
+                <p class="p-card-desc">Unlimited Vox dictation, style rewrites, PiP AI search, and deep timeline retrospectives.</p>
+              </div>
+
+              <div class="p-features-block">
+                <span class="p-features-label pro-features-label">EVERYTHING IN FREE, PLUS:</span>
+                
+                <!-- 2-Column Wide Grid for Pro Features (Keeps height compact!) -->
+                <div class="pro-features-2col">
+                  <div class="p-feat-col">
+                    <div class="p-feat-item">
+                      <span class="feat-icon pro-icon"><Mic :size="15" /></span>
+                      <div class="feat-copy">
+                        <strong>Vox Pro</strong>
+                        <small>More voice typing, smart punctuation &amp; vocabulary</small>
+                      </div>
+                    </div>
+                    <div class="p-feat-item">
+                      <span class="feat-icon pro-icon"><Edit3 :size="15" /></span>
+                      <div class="feat-copy">
+                        <strong>Write with confidence</strong>
+                        <small>Grammar fixes, rewrites &amp; tone suggestions</small>
+                      </div>
+                    </div>
+                    <div class="p-feat-item">
+                      <span class="feat-icon pro-icon"><Sliders :size="15" /></span>
+                      <div class="feat-copy">
+                        <strong>Make it sound like you</strong>
+                        <small>Saved writing styles &amp; reusable instructions</small>
+                      </div>
+                    </div>
+                    <div class="p-feat-item">
+                      <span class="feat-icon pro-icon"><Search :size="15" /></span>
+                      <div class="feat-copy">
+                        <strong>AI, without switching apps</strong>
+                        <small>More search, screenshot questions &amp; follow-ups</small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="p-feat-col">
+                    <div class="p-feat-item">
+                      <span class="feat-icon pro-icon"><BookOpen :size="15" /></span>
+                      <div class="feat-copy">
+                        <strong>Ask your memories</strong>
+                        <small>Find answers across journals, notes &amp; context</small>
+                      </div>
+                    </div>
+                    <div class="p-feat-item">
+                      <span class="feat-icon pro-icon"><Calendar :size="15" /></span>
+                      <div class="feat-copy">
+                        <strong>Relive your month</strong>
+                        <small>Weekly summaries &amp; NNN monthly recaps</small>
+                      </div>
+                    </div>
+                    <div class="p-feat-item">
+                      <span class="feat-icon pro-icon"><Layers :size="15" /></span>
+                      <div class="feat-copy">
+                        <strong>Do more, effortlessly</strong>
+                        <small>Multi-step routines &amp; formatted exports</small>
+                      </div>
+                    </div>
+                    <div class="p-feat-item">
+                      <span class="feat-icon pro-icon"><Shield :size="15" /></span>
+                      <div class="feat-copy">
+                        <strong>Cloud AI Isolation</strong>
+                        <small>Google Search grounding &amp; validated intents</small>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="pricing-caption-note">
-                <span class="caption-title">Monolog Pro Subscription Screen</span>
-                <p class="caption-desc">Designed with Google Material 3 tactile components and local Keystore tier checks. On-device AI features remain 100% free forever.</p>
+
+              <div class="p-card-footer pro-footer">
+                <button class="plan-primary-cta" @click="triggerGetPro">
+                  <span>Get Monolog Pro</span>
+                  <span class="cta-arrow">→</span>
+                </button>
+                <div class="pro-footer-meta">
+                  <span class="savings-text-note" v-if="billingCycle === 'yearly'">Save ₹216 a year compared with monthly billing.</span>
+                  <span class="savings-text-note" v-else>Switch to yearly to save ₹216 / year.</span>
+                </div>
               </div>
+            </div>
+          </div>
+
+          <!-- Bottom Privacy & Trust Bar -->
+          <div class="pricing-bottom-bar">
+            <div class="p-trust-item">
+              <Shield :size="14" class="trust-shield-icon" />
+              <span>Encryption, incognito &amp; data control — always free.</span>
+            </div>
+            <div class="p-trust-legal">
+              <span>Renews automatically. Cancel anytime.</span>
+              <span class="dot-sep">•</span>
+              <span>Terms</span>
+              <span class="dot-sep">•</span>
+              <span>Privacy</span>
             </div>
           </div>
         </div>
@@ -4220,231 +4211,305 @@ const closeModal = () => {
   margin: 0;
 }
 
-.pricing-split-layout {
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 3rem;
-  align-items: start;
-}
-
-/* Recreated Interactive Mobile Subscription Screen */
-.pricing-phone-card {
-  border-radius: 36px;
-  padding: 1.85rem 1.65rem;
+.pricing-showcase-container {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  background: rgba(18, 19, 26, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
-  position: relative;
-  overflow: hidden;
+  gap: 1.5rem;
+  width: 100%;
 }
 
-.monolog-page.theme-light-active .pricing-phone-card,
-.pricing-phone-card.theme-paper {
-  background: #ffffff;
-  border-color: rgba(15, 23, 42, 0.12);
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
-  color: #0f172a;
-}
-
-.plan-phone-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 0.25rem;
-}
-
-.plan-back-btn {
-  background: none;
-  border: none;
-  color: #94a3b8;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  padding: 0.2rem;
-}
-
-.plan-brand-pill {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  background: #ffffff;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-}
-
-.plan-logo-img {
-  width: 18px;
-  height: 18px;
-}
-
-.plan-brand-name {
-  font-family: var(--font-cursive);
-  font-size: 1.15rem;
-  color: #050505;
-  font-weight: 400;
-}
-
-.plan-restore-btn {
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
-  color: #94a3b8;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  transition: color 0.15s ease;
-}
-
-.plan-restore-btn:hover {
-  color: #f1f5f9;
-}
-
-.monolog-page.theme-light-active .plan-restore-btn:hover,
-.pricing-phone-card.theme-paper .plan-restore-btn:hover {
-  color: #0f172a;
-}
-
-.plan-phone-headline {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.plan-phone-headline h4 {
-  font-size: 1.35rem;
-  font-weight: 800;
-  color: #f8fafc;
-  margin: 0;
-  letter-spacing: -0.01em;
-}
-
-.monolog-page.theme-light-active .plan-phone-headline h4,
-.pricing-phone-card.theme-paper .plan-phone-headline h4 {
-  color: #0f172a;
-}
-
-.plan-phone-headline p {
-  font-size: 0.82rem;
-  color: #94a3b8;
-  margin: 0;
-}
-
-/* Tier Cards */
-.plan-tier-card {
-  border-radius: 20px;
-  padding: 1.15rem 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-
-.free-tier {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.monolog-page.theme-light-active .free-tier,
-.pricing-phone-card.theme-paper .free-tier {
-  background: #f8fafc;
-  border-color: rgba(0, 0, 0, 0.06);
-}
-
-.pro-tier {
-  background: 
-    radial-gradient(circle at 100% 0%, rgba(139, 92, 246, 0.15) 0%, transparent 60%),
-    radial-gradient(circle at 0% 100%, rgba(56, 189, 248, 0.10) 0%, transparent 60%),
-    rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(192, 132, 252, 0.35);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-}
-
-.monolog-page.theme-light-active .pro-tier,
-.pricing-phone-card.theme-paper .pro-tier {
-  background: 
-    radial-gradient(circle at 100% 0%, rgba(242, 234, 254, 0.8) 0%, transparent 60%),
-    radial-gradient(circle at 0% 100%, rgba(232, 237, 255, 0.8) 0%, transparent 60%),
-    #ffffff;
-  border-color: rgba(147, 51, 234, 0.25);
-  box-shadow: 0 10px 30px rgba(147, 51, 234, 0.06);
-}
-
-.plan-tier-header {
+/* Compact Header Row: Title on Left, Billing Switcher on Right */
+.pricing-compact-header {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: flex-end;
+  gap: 2rem;
+  flex-wrap: wrap;
 }
 
-.plan-name {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #f8fafc;
-}
-
-.monolog-page.theme-light-active .plan-name,
-.pricing-phone-card.theme-paper .plan-name {
-  color: #0f172a;
-}
-
-.plan-price {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #f8fafc;
-}
-
-.monolog-page.theme-light-active .plan-price,
-.pricing-phone-card.theme-paper .plan-price {
-  color: #0f172a;
-}
-
-.pro-title-wrap {
+.pricing-title-col {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 650px;
+}
+
+.pricing-header-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   gap: 0.5rem;
 }
 
-.plan-badge {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  padding: 0.15rem 0.45rem;
-  background: rgba(192, 132, 252, 0.2);
-  border: 1px solid rgba(192, 132, 252, 0.4);
-  color: #c084fc;
+/* Sleek Billing Switcher Pills */
+.billing-switch-pills {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 9999px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.b-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.b-pill-btn:hover {
+  color: #f1f5f9;
+}
+
+.b-pill-btn.active {
+  background: #f8fafc;
+  color: #050505;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+.b-pill-rate {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+
+.b-pill-btn.active .b-pill-rate {
+  opacity: 0.95;
   font-weight: 700;
 }
 
-.pro-lead-text {
-  font-size: 0.76rem;
-  color: #94a3b8;
+.b-save-tag {
+  background: #c084fc;
+  color: #050505;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 0.1rem 0.4rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-/* Feature Lists */
-.plan-feature-list {
-  list-style: none;
+.b-pill-btn.active .b-save-tag {
+  background: #7c3aed;
+  color: #ffffff;
+}
+
+.plan-restore-link {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 0.74rem;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: color 0.15s ease;
   padding: 0;
-  margin: 0;
+}
+
+.plan-restore-link:hover {
+  color: #94a3b8;
+  text-decoration: underline;
+}
+
+/* Wide Two-Tier Plans Grid (Low Vertical Height) */
+.pricing-wide-grid {
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+.plan-card-wide {
+  border-radius: 24px;
+  padding: 1.5rem 1.65rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.15rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.plan-card-wide:hover {
+  transform: translateY(-2px);
+}
+
+.free-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.pro-card {
+  background: rgba(18, 19, 28, 0.85);
+  border: 1px solid rgba(192, 132, 252, 0.35);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 35px rgba(139, 92, 246, 0.08);
+}
+
+.pro-card:hover {
+  border-color: rgba(192, 132, 252, 0.6);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 55px rgba(139, 92, 246, 0.16);
+}
+
+.pro-aurora-glow-bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 450px;
+  height: 250px;
+  background: radial-gradient(circle at 85% 15%, rgba(139, 92, 246, 0.18), rgba(56, 189, 248, 0.07), transparent 70%);
+  pointer-events: none;
+}
+
+.p-card-top {
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
 }
 
-.plan-feature-list li {
+.p-tier-badge-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.p-tier-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: -0.01em;
+}
+
+.p-tier-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #64748b;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.pro-title-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.pro-name {
+  background: linear-gradient(135deg, #ffffff 40%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.pro-highlight-badge {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #c084fc;
+  background: rgba(192, 132, 252, 0.18);
+  border: 1px solid rgba(192, 132, 252, 0.4);
+  padding: 0.12rem 0.5rem;
+  border-radius: 9999px;
+  letter-spacing: 0.06em;
+}
+
+.pro-savings-inline {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #34d399;
+}
+
+.p-price-block {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.p-price-main {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.p-price-val {
+  font-size: 1.95rem;
+  font-weight: 800;
+  color: #f8fafc;
+  line-height: 1;
+}
+
+.p-price-period {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.p-billed-sub {
+  font-size: 0.74rem;
+  color: #64748b;
+  margin-left: 0.25rem;
+}
+
+.p-card-desc {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Features Block */
+.p-features-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.p-features-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.pro-features-label {
+  color: #c084fc;
+}
+
+.p-feat-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.p-feat-list li {
   display: flex;
   align-items: flex-start;
   gap: 0.65rem;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   color: #cbd5e1;
   line-height: 1.4;
-}
-
-.monolog-page.theme-light-active .plan-feature-list li,
-.pricing-phone-card.theme-paper .plan-feature-list li {
-  color: #334155;
 }
 
 .feat-icon {
@@ -4458,246 +4523,90 @@ const closeModal = () => {
   color: #64748b;
 }
 
-.monolog-page.theme-light-active .feat-icon,
-.pricing-phone-card.theme-paper .feat-icon {
-  color: #475569;
-}
-
-.pro-tier .feat-icon {
-  color: #c084fc;
-}
-
-.monolog-page.theme-light-active .pro-tier .feat-icon,
-.pricing-phone-card.theme-paper .pro-tier .feat-icon {
-  color: #7c3aed;
-}
-
 .feat-icon-svg {
   width: 15px;
   height: 15px;
   stroke: currentColor;
 }
 
-.pro-list {
+.pro-icon {
+  color: #c084fc;
+}
+
+/* 2-Column Grid for Pro Features to Keep Height Compact */
+.pro-features-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1.4rem;
+}
+
+.p-feat-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.p-feat-item {
+  display: flex;
+  align-items: flex-start;
   gap: 0.65rem;
 }
 
-.feat-text {
+.feat-copy {
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
 }
 
-.feat-text strong {
-  font-size: 0.8rem;
-  font-weight: 600;
+.feat-copy strong {
+  font-size: 0.82rem;
+  font-weight: 700;
   color: #f8fafc;
+  line-height: 1.3;
 }
 
-.monolog-page.theme-light-active .feat-text strong,
-.pricing-phone-card.theme-paper .feat-text strong {
-  color: #0f172a;
-}
-
-.feat-text small {
+.feat-copy small {
   font-size: 0.72rem;
   color: #94a3b8;
   line-height: 1.35;
 }
 
-.monolog-page.theme-light-active .feat-text small,
-.pricing-phone-card.theme-paper .feat-text small {
-  color: #64748b;
-}
-
-/* Billing Selector */
-.plan-billing-selector {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.65rem;
-  margin-top: 0.35rem;
-}
-
-.billing-option-box {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1.5px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
-  padding: 0.75rem 0.85rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  cursor: pointer;
-  position: relative;
-  transition: all 0.2s ease;
-}
-
-.billing-option-box:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.22);
-}
-
-.billing-option-box.active {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: #f8fafc;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
-
-.monolog-page.theme-light-active .billing-option-box,
-.pricing-phone-card.theme-paper .billing-option-box {
-  background: #f8fafc;
-  border-color: #e2e8f0;
-}
-
-.monolog-page.theme-light-active .billing-option-box.active,
-.pricing-phone-card.theme-paper .billing-option-box.active {
-  background: #ffffff;
-  border-color: #0f172a;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-}
-
-.b-badge-wrap {
-  position: absolute;
-  top: -10px;
-  left: 10px;
-}
-
-.b-savings-badge {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  font-weight: 700;
-  padding: 0.1rem 0.45rem;
-  background: #c084fc;
-  color: #050505;
-  border-radius: 9999px;
-}
-
-.b-details {
+/* Card Footers */
+.p-card-footer {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
 }
 
-.b-label {
-  font-size: 0.74rem;
-  font-weight: 600;
-  color: #94a3b8;
-}
-
-.monolog-page.theme-light-active .b-label,
-.pricing-phone-card.theme-paper .b-label {
-  color: #475569;
-}
-
-.b-price-row {
-  display: flex;
-  align-items: baseline;
-  gap: 0.2rem;
-}
-
-.b-price {
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: #f8fafc;
-}
-
-.monolog-page.theme-light-active .b-price,
-.pricing-phone-card.theme-paper .b-price {
-  color: #0f172a;
-}
-
-.b-sub {
-  font-size: 0.7rem;
-  color: #94a3b8;
-}
-
-.b-billed-note {
-  font-size: 0.65rem;
-  color: #94a3b8;
-  white-space: nowrap;
-}
-
-.b-radio-circle {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.billing-option-box.active .b-radio-circle {
-  border-color: #f8fafc;
-}
-
-.b-radio-circle.checked {
-  background: #f8fafc;
-  color: #050505;
-  border-color: #f8fafc;
-}
-
-.monolog-page.theme-light-active .b-radio-circle,
-.pricing-phone-card.theme-paper .b-radio-circle {
-  border-color: #cbd5e1;
-}
-
-.monolog-page.theme-light-active .b-radio-circle.checked,
-.pricing-phone-card.theme-paper .b-radio-circle.checked {
-  background: #0f172a;
-  color: #ffffff;
-  border-color: #0f172a;
-}
-
-.b-radio-dot {
-  width: 8px;
-  height: 8px;
-  background: #f8fafc;
-  border-radius: 50%;
-}
-
-.monolog-page.theme-light-active .b-radio-dot,
-.pricing-phone-card.theme-paper .b-radio-dot {
-  background: #0f172a;
-}
-
-/* Savings & Privacy Banners */
-.plan-savings-banner {
-  text-align: center;
-  font-size: 0.72rem;
-  color: #94a3b8;
-  padding: 0.2rem 0;
-}
-
-.plan-privacy-guarantee {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  font-size: 0.74rem;
+.plan-ghost-btn {
+  background: rgba(255, 255, 255, 0.04);
   color: #cbd5e1;
-  background: rgba(255, 255, 255, 0.04);
-  padding: 0.5rem 0.75rem;
-  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  padding: 0.72rem 1.25rem;
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: center;
 }
 
-.monolog-page.theme-light-active .plan-privacy-guarantee,
-.pricing-phone-card.theme-paper .plan-privacy-guarantee {
-  background: #f1f5f9;
-  color: #334155;
+.plan-ghost-btn:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
-.guarantee-shield {
-  color: var(--color-accent);
-}
-
-/* CTA Actions */
-.plan-cta-wrap {
+.pro-footer {
   display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  margin-top: 0.25rem;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .plan-primary-cta {
@@ -4705,162 +4614,101 @@ const closeModal = () => {
   color: #050505;
   border: none;
   border-radius: 9999px;
-  padding: 0.85rem 1.25rem;
+  padding: 0.8rem 1.6rem;
   font-family: var(--font-sans);
   font-size: 0.88rem;
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
-  transition: all 0.2s ease;
-  display: flex;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .plan-primary-cta:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(255, 255, 255, 0.25);
+  box-shadow: 0 6px 25px rgba(255, 255, 255, 0.28);
+  background: #ffffff;
 }
 
-.monolog-page.theme-light-active .plan-primary-cta,
-.pricing-phone-card.theme-paper .plan-primary-cta {
-  background: #0f172a;
-  color: #ffffff;
-  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15);
+.cta-arrow {
+  transition: transform 0.2s ease;
 }
 
-.monolog-page.theme-light-active .plan-primary-cta:hover,
-.pricing-phone-card.theme-paper .plan-primary-cta:hover {
-  background: #1e293b;
+.plan-primary-cta:hover .cta-arrow {
+  transform: translateX(3px);
 }
 
-.plan-secondary-cta {
-  background: transparent;
-  color: #94a3b8;
-  border: none;
-  font-family: var(--font-sans);
-  font-size: 0.78rem;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0.4rem;
-  transition: color 0.15s ease;
-}
-
-.plan-secondary-cta:hover {
-  color: #f1f5f9;
-}
-
-.monolog-page.theme-light-active .plan-secondary-cta:hover,
-.pricing-phone-card.theme-paper .plan-secondary-cta:hover {
-  color: #0f172a;
-}
-
-/* Footer Disclaimer */
-.plan-footer-disclaimer {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  font-size: 0.68rem;
-  color: #64748b;
-  margin-top: -0.2rem;
-}
-
-.plan-footer-disclaimer p {
-  margin: 0;
-}
-
-.plan-legal-links {
+.pro-footer-meta {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
+}
+
+.savings-text-note {
+  font-size: 0.76rem;
+  color: #94a3b8;
+}
+
+/* Pricing Bottom Privacy & Legal Bar */
+.pricing-bottom-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  font-size: 0.74rem;
+  color: #64748b;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.p-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #cbd5e1;
+}
+
+.trust-shield-icon {
+  color: var(--color-accent);
+}
+
+.p-trust-legal {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .dot-sep {
-  opacity: 0.5;
-}
-
-/* Right: High-Res Phone Mockup Showcase */
-.pricing-asset-showcase {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.25rem;
-}
-
-.pricing-mockup-wrapper {
-  position: relative;
-  width: 100%;
-  max-width: 380px;
-  border-radius: 36px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.75), 0 0 40px rgba(192, 132, 252, 0.12);
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.pricing-mockup-wrapper:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85), 0 0 50px rgba(192, 132, 252, 0.22);
-}
-
-.pricing-mockup-img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.mockup-hover-hint {
-  position: absolute;
-  bottom: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(15, 23, 42, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(12px);
-  padding: 0.35rem 0.85rem;
-  border-radius: 9999px;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: #f8fafc;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-.pricing-caption-note {
-  max-width: 380px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  text-align: center;
-}
-
-.caption-title {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #f8fafc;
-}
-
-.monolog-page.theme-light-active .caption-title {
-  color: #0f172a;
-}
-
-.caption-desc {
-  font-size: 0.75rem;
-  color: #94a3b8;
-  line-height: 1.45;
-  margin: 0;
+  opacity: 0.4;
 }
 
 @media (max-width: 960px) {
-  .pricing-split-layout {
+  .pricing-compact-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+  .pricing-header-actions {
+    align-items: flex-start;
+    width: 100%;
+  }
+  .pricing-wide-grid {
     grid-template-columns: 1fr;
-    gap: 2.5rem;
+  }
+  .pro-features-2col {
+    grid-template-columns: 1fr;
+  }
+  .pro-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .plan-primary-cta {
+    justify-content: center;
   }
 }
 
