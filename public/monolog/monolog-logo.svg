@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" fill="none">
+<title>Monolog official logo</title>
+<desc>White keyboard key with three evenly spaced diagonal diary-page layers; borders remain visible along the right edge, around the bottom-right corner and across the bottom. Exact Beth Ellen lowercase m, left aligned and vertically centered.</desc>
+<defs>
+  <linearGradient id="cover" x1="192" y1="221" x2="838" y2="872" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#D5DAE7"/><stop offset="1" stop-color="#A4ADBF"/>
+  </linearGradient>
+  <linearGradient id="paper" x1="158" y1="250" x2="838" y2="818" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#FFFFFF"/><stop offset="0.67" stop-color="#F0F2F8"/><stop offset="1" stop-color="#D9DFEB"/>
+  </linearGradient>
+  <linearGradient id="key" x1="235" y1="133" x2="743" y2="774" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#FFFFFF"/><stop offset="0.58" stop-color="#F8F9FD"/><stop offset="1" stop-color="#EBEEF6"/>
+  </linearGradient>
+  <linearGradient id="key-edge" x1="128" y1="124" x2="848" y2="794" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#FFFFFF"/><stop offset="0.5" stop-color="#ECEFF7"/><stop offset="1" stop-color="#B9C2D4"/>
+  </linearGradient>
+  <filter id="shadow" x="66" y="84" width="892" height="884" filterUnits="userSpaceOnUse">
+    <feGaussianBlur stdDeviation="12"/>
+  </filter>
+</defs>
+<!-- Three parallel page layers with a consistent 22px diagonal offset, back to front. -->
+<rect x="201" y="188" width="706" height="660" rx="120" fill="#5F6B87" fill-opacity=".14" filter="url(#shadow)"/>
+<rect id="page-3" x="194" y="184" width="720" height="660" rx="120" fill="#DEE4EF" stroke="#AAB5C9" stroke-width="4"/>
+<rect id="page-2" x="172" y="162" width="720" height="660" rx="120" fill="#EDF1F8" stroke="#B0BBD0" stroke-width="4"/>
+<rect id="page-1" x="150" y="140" width="720" height="660" rx="120" fill="#F7F9FD" stroke="#BBC5D7" stroke-width="4"/>
+<rect x="128" y="118" width="720" height="660" rx="120" fill="url(#key)" stroke="url(#key-edge)" stroke-width="4"/>
+<path d="M151 242C151 185 190 143 248 142H723" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-opacity=".9"/>
+<path d="M1770 304Q1814 340 1847.0 333.0Q1880 326 1882 270Q1882 252 1874.0 234.0Q1866 216 1856.0 203.0Q1846 190 1826.0 174.0Q1806 158 1795.0 150.0Q1784 142 1761.0 127.0Q1738 112 1732 108Q1670 66 1612 18Q1534 -44 1450 -68Q1352 -96 1298 -98Q1242 -100 1160 -76Q1082 -56 1035.0 -23.0Q988 10 962.0 62.0Q936 114 935.0 193.0Q934 272 954 372Q972 474 1014 618Q1026 654 1006 654Q952 654 796.0 462.0Q640 270 554 102Q494 -14 454.0 -38.0Q414 -62 364 -14Q322 24 324.0 59.0Q326 94 376 208Q418 292 418 324Q418 352 460 440Q488 540 478 546Q456 546 391.0 475.0Q326 404 255.0 305.0Q184 206 148 138Q92 34 46.0 6.0Q0 -22 -46 18Q-90 58 -80.0 117.0Q-70 176 0 310Q20 352 39.0 433.0Q58 514 76 548Q142 690 220 750Q238 764 258.0 775.0Q278 786 299.0 789.0Q320 792 327.0 776.0Q334 760 326 722Q308 660 340 666Q364 668 396 720Q442 790 504 834Q528 850 544 858Q564 866 570 868Q580 874 598.0 872.0Q616 870 624 868Q632 868 656 860Q682 852 696 850Q752 838 752 818Q756 814 758 758Q762 732 768.0 720.0Q774 708 792.0 709.0Q810 710 836.0 723.0Q862 736 914 770Q1034 846 1120 858Q1184 864 1200.0 855.0Q1216 846 1234 808Q1258 746 1244.0 650.0Q1230 554 1192 470Q1148 386 1148 342Q1148 306 1126 236Q1104 176 1133.0 124.0Q1162 72 1224 60Q1260 54 1318 66Q1334 70 1512 146Q1512 146 1549 168Q1586 190 1629.0 215.0Q1672 240 1714.0 266.0Q1756 292 1770 304Z" transform="translate(232.839620 552.574920) scale(0.25460169 -0.25460169)" fill="#151B29" fill-rule="nonzero"/>
+</svg>

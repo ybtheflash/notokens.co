@@ -11,6 +11,7 @@
   --color-hero-font: #ffedd5; /* lightest orange cream */
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-cursive: 'Beth Ellen', cursive;
 }
 
 *, *::before, *::after {

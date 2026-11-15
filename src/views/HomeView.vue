@@ -71,6 +71,11 @@ const bubbleParticles = [
           </a>
         </div>
         <div class="nav-right">
+          <router-link to="/monolog" class="nav-monolog-pill" title="Monolog — Startup Buildathon 2026">
+            <span class="pill-dot"></span>
+            <span class="pill-text-desktop">Monolog (Buildathon '26)</span>
+            <span class="pill-text-mobile">Monolog '26</span>
+          </router-link>
           <a href="mailto:hello@notokens.co" class="contact-link">
             <svg class="mail-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect width="20" height="16" x="2" y="4" rx="2"></rect>
@@ -432,6 +437,52 @@ const bubbleParticles = [
           OtterSpeak is an AI-powered platform designed to help you improve your reading speed, pronunciation, and fluency. Using advanced speech recognition, RSVP reading techniques and the OtterBrain AI, it provides real-time feedback on your reading sessions.
         </p>
       </div>
+
+      <!-- Project 2: Monolog (Startup Buildathon India 2026 Submission) -->
+      <div class="project-card anim-item anim-3">
+        <div class="project-card-header">
+          <div class="otterspeak-branding monolog-branding">
+            <div class="otterspeak-logo-container">
+              <img src="/monolog/monolog-logo.svg" alt="Monolog Logo" class="monolog-home-icon" />
+              <h2 class="otterspeak-text monolog-title">monolog</h2>
+            </div>
+            <div class="otterspeak-beta">buildathon '26</div>
+          </div>
+          <div class="project-url-container">
+            <router-link to="/monolog" class="project-url">
+              notokens.co/monolog
+            </router-link>
+            <div class="project-preview-popup">
+              <div class="preview-browser-header">
+                <div class="preview-traffic-dots">
+                  <span class="preview-dot p-close"></span>
+                  <span class="preview-dot p-min"></span>
+                  <span class="preview-dot p-max"></span>
+                </div>
+                <div class="preview-url-pill">
+                  <svg class="preview-lock-icon" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  <span>notokens.co/monolog</span>
+                </div>
+                <span class="preview-badge-live">PREVIEWS</span>
+              </div>
+              <div class="preview-viewport">
+                <img 
+                  src="/monolog/monolog-aurora-themes.png" 
+                  alt="Monolog Keyboard Preview" 
+                  class="preview-image active-slide"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="project-description anim-item anim-4">
+          <strong class="monolog-brand-lead">monolog</strong> combines an AI-powered Android keyboard, natural voice typing and a private, searchable journal. Built for <strong>Startup Buildathon India 2026</strong>.
+        </p>
+      </div>
     </main>
     </Transition>
 
@@ -532,6 +583,61 @@ const bubbleParticles = [
 .brand-logo:hover .circle-half,
 .brand-logo:hover .slash-line {
   stroke: #ffa54c;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nav-monolog-pill {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #ffedd5;
+  padding: 0.32rem 0.72rem;
+  border: 1px solid rgba(249, 115, 22, 0.35);
+  border-radius: 9999px;
+  background: rgba(249, 115, 22, 0.1);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.25s ease;
+}
+
+.pill-text-mobile {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .nav-monolog-pill {
+    padding: 0.22rem 0.52rem;
+    font-size: 0.72rem;
+    gap: 0.3rem;
+  }
+  .pill-text-desktop {
+    display: none;
+  }
+  .pill-text-mobile {
+    display: inline;
+  }
+}
+
+.nav-monolog-pill:hover {
+  background: rgba(249, 115, 22, 0.22);
+  border-color: rgba(249, 115, 22, 0.6);
+  transform: translateY(-1px);
+}
+
+.pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 6px var(--color-accent);
 }
 
 .contact-link {
@@ -1452,6 +1558,40 @@ const bubbleParticles = [
   font-weight: 500;
   letter-spacing: 0.05em;
   color: var(--color-text-muted);
+}
+
+/* Monolog Home Card Styles */
+.monolog-card {
+  border-color: rgba(249, 115, 22, 0.2);
+  background: linear-gradient(180deg, #18181c 0%, rgba(249, 115, 22, 0.03) 100%);
+}
+
+.monolog-branding {
+  position: relative;
+  display: inline-flex;
+}
+
+.monolog-title {
+  font-family: var(--font-cursive);
+  font-size: 2.1rem;
+  letter-spacing: 0.02em;
+  color: var(--color-hero-font);
+}
+
+.monolog-brand-lead {
+  font-family: var(--font-cursive);
+  font-size: 1.15em;
+  color: var(--color-accent);
+  letter-spacing: 0.02em;
+  font-weight: 400;
+}
+
+.monolog-home-icon {
+  height: 2.8rem;
+  width: 2.8rem;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .project-url-container {
