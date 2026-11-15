@@ -22,7 +22,8 @@ import {
   Layers,
   Cloud,
   Smile,
-  Globe
+  Globe,
+  Lock
 } from 'lucide-vue-next'
 
 // Keyboard interactive widget state - Defaults to Paper theme
@@ -36,6 +37,27 @@ const contextToast = ref<string | null>(null)
 let toastTimer: number | null = null
 let voxHoldTimer: number | null = null
 let isHoldTriggered = false
+
+// Host app simulator: 'chat' (Google Messages) | 'bank' (Everyday Bank Sensitive Input)
+const simApp = ref<'chat' | 'bank'>('chat')
+
+const switchSimApp = (app: 'chat' | 'bank') => {
+  simApp.value = app
+  if (toastTimer) clearTimeout(toastTimer)
+  if (app === 'bank') {
+    isIncognito.value = true
+    isAiDrawerOpen.value = false
+    isVoxDrawerOpen.value = false
+    isVoxMenuOpen.value = false
+    contextToast.value = 'Sensitive input detected (Everyday Bank) · Auto-Incognito engaged · Nothing saved'
+  } else {
+    isIncognito.value = false
+    contextToast.value = 'Switched to Messages · Smart suggestions & screen context ready'
+  }
+  toastTimer = window.setTimeout(() => {
+    contextToast.value = null
+  }, 3500)
+}
 
 // Pricing plan state
 const billingCycle = ref<'yearly' | 'monthly'>('yearly')
@@ -61,8 +83,11 @@ const toggleIncognito = () => {
   isIncognito.value = !isIncognito.value
   if (toastTimer) clearTimeout(toastTimer)
   if (isIncognito.value) {
-    contextToast.value = 'Incognito active · Memory capture paused for 15 minutes'
+    contextToast.value = 'Incognito active · Sensitive-input protection engaged · Nothing saved'
   } else {
+    if (simApp.value === 'bank') {
+      simApp.value = 'chat'
+    }
     contextToast.value = 'Memory capture resumed · Sensitive-input filtering active'
   }
   toastTimer = window.setTimeout(() => {
@@ -177,7 +202,7 @@ const triggerContextButton = () => {
 }
 
 // Interface design boards tab
-const activeDesignTab = ref<'dual' | 'vox' | 'ink' | 'flow'>('dual')
+const activeDesignTab = ref<'dual' | 'vox' | 'ink' | 'privacy' | 'flow'>('dual')
 const selectedImageModal = ref<string | null>(null)
 
 // Flow screens from the latest Figma/Canva designs
@@ -379,7 +404,7 @@ const closeModal = () => {
 
           <!-- Right: Interactive Realistic Monolog Mobile Phone Keyboard Mockup -->
           <div class="hero-right">
-            <div class="phone-device-chassis" :class="[keyboardTheme]">
+            <div class="phone-device-chassis" :class="[keyboardTheme, { 'incognito-mode-active': isIncognito }]">
               <!-- Realistic Android Status Bar -->
               <div class="phone-status-bar">
                 <span class="status-time">9:41</span>
@@ -413,43 +438,105 @@ const closeModal = () => {
                 </div>
               </div>
 
-              <!-- Simulated Host App Header (Google Messages / Chat) -->
-              <div class="sim-chat-header">
-                <div class="chat-contact-info">
-                  <span class="chat-back-arrow">←</span>
-                  <div class="chat-avatar">S</div>
-                  <div class="chat-name-col">
-                    <span class="chat-contact-name">Sam</span>
+              <!-- Interactive Simulated App Switcher Pills (Chat vs Sensitive Bank) -->
+              <div class="sim-app-selector-bar">
+                <button 
+                  class="app-sel-btn" 
+                  :class="{ active: simApp === 'chat' }"
+                  @click="switchSimApp('chat')"
+                >
+                  <span>Chat (Sam)</span>
+                </button>
+                <button 
+                  class="app-sel-btn bank-sel-btn" 
+                  :class="{ active: simApp === 'bank' }"
+                  @click="switchSimApp('bank')"
+                >
+                  <Shield :size="11" />
+                  <span>Everyday Bank (Auto-Incognito)</span>
+                </button>
+              </div>
+
+              <!-- VIEW 1: Simulated Host App (Google Messages / Chat) -->
+              <div v-if="simApp === 'chat'" class="sim-host-screen-chat">
+                <div class="sim-chat-header">
+                  <div class="chat-contact-info">
+                    <span class="chat-back-arrow">←</span>
+                    <div class="chat-avatar">S</div>
+                    <div class="chat-name-col">
+                      <span class="chat-contact-name">Sam</span>
+                    </div>
+                  </div>
+                  <span class="chat-more-dots">⋮</span>
+                </div>
+
+                <!-- Simulated Host Chat Messages -->
+                <div class="sim-chat-conversation">
+                  <span class="chat-date-pill">TODAY</span>
+                  <div class="chat-bubble bubble-received">
+                    <span>Did you check the timetable?</span>
+                  </div>
+                  <div class="chat-bubble bubble-sent">
+                    <span>Yes, just checked.</span>
                   </div>
                 </div>
-                <span class="chat-more-dots">⋮</span>
+
+                <!-- Simulated Host Chat Input Field -->
+                <div class="sim-chat-input-bar">
+                  <button class="chat-attach-btn" title="Add attachment">+</button>
+                  <div class="chat-input-capsule">
+                    <span class="chat-input-text">{{ activeInputText }}</span>
+                    <span class="cursor-blink">|</span>
+                  </div>
+                  <button 
+                    class="chat-send-btn" 
+                    title="Send message"
+                    @click="triggerContextButton"
+                  >
+                    ↑
+                  </button>
+                </div>
               </div>
 
-              <!-- Simulated Host Chat Messages -->
-              <div class="sim-chat-conversation">
-                <span class="chat-date-pill">TODAY</span>
-                <div class="chat-bubble bubble-received">
-                  <span>Did you check the timetable?</span>
+              <!-- VIEW 2: Simulated Host App (Everyday Bank Sensitive Input) -->
+              <div v-else class="sim-host-screen-bank">
+                <div class="bank-app-header">
+                  <span class="bank-back-arrow" @click="switchSimApp('chat')">←</span>
+                  <div class="bank-title-pill">
+                    <span class="bank-pillar-icon">🏛️</span>
+                    <span class="bank-brand-title">Everyday Bank</span>
+                  </div>
                 </div>
-                <div class="chat-bubble bubble-sent">
-                  <span>Yes, just checked.</span>
-                </div>
-              </div>
 
-              <!-- Simulated Host Chat Input Field -->
-              <div class="sim-chat-input-bar">
-                <button class="chat-attach-btn" title="Add attachment">+</button>
-                <div class="chat-input-capsule">
-                  <span class="chat-input-text">{{ activeInputText }}</span>
-                  <span class="cursor-blink">|</span>
+                <div class="bank-form-body">
+                  <h4 class="bank-headline">Sign in securely</h4>
+                  <p class="bank-subheadline">Access your account</p>
+
+                  <div class="bank-input-field">
+                    <label class="bank-field-label">Customer ID</label>
+                    <div class="bank-field-box">
+                      <span>•••• 4821</span>
+                    </div>
+                  </div>
+
+                  <div class="bank-input-field active-field">
+                    <label class="bank-field-label">Password</label>
+                    <div class="bank-field-box password-box">
+                      <span class="masked-pass">••••••••</span>
+                      <span class="cursor-blink">|</span>
+                      <EyeOff :size="13" class="pass-eye-icon" />
+                    </div>
+                  </div>
+
+                  <span class="bank-forgot-link">Forgot password?</span>
+
+                  <button class="bank-signin-button">Sign in</button>
+
+                  <div class="bank-security-footer">
+                    <Shield :size="11" />
+                    <span>Secure sign-in</span>
+                  </div>
                 </div>
-                <button 
-                  class="chat-send-btn" 
-                  title="Send message"
-                  @click="triggerContextButton"
-                >
-                  ↑
-                </button>
               </div>
 
               <!-- Floating Picture-in-Picture AI Drawer (Matches AI Mode.png) -->
@@ -544,6 +631,26 @@ const closeModal = () => {
                 </div>
               </Transition>
 
+              <!-- Floating Incognito Active Banner (Matches Sensitive Input Screen) -->
+              <Transition name="slide-pip">
+                <div v-if="isIncognito" class="incognito-banner-overlay">
+                  <div class="inc-banner-left">
+                    <svg class="inc-hat-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M2 10h20"/>
+                      <path d="M5 10a7 7 0 0 1 14 0"/>
+                      <circle cx="7" cy="16" r="3"/>
+                      <circle cx="17" cy="16" r="3"/>
+                      <path d="M10 16h4"/>
+                    </svg>
+                    <div class="inc-banner-text">
+                      <span class="inc-title">Incognito is on</span>
+                      <span class="inc-sub"><Shield :size="10" /> Sensitive input · Nothing saved</span>
+                    </div>
+                  </div>
+                  <span class="inc-auto-tag">Automatic</span>
+                </div>
+              </Transition>
+
               <!-- The Realistic Borderless Aurora Keyboard -->
               <div class="borderless-keyboard">
                 <!-- Toolbar Row: Suggestions & Action Buttons -->
@@ -553,8 +660,12 @@ const closeModal = () => {
                     <ChevronDown :size="16" />
                   </button>
 
-                  <!-- Active Suggestion Capsule -->
+                  <!-- Active Suggestion Capsule or Incognito Brand Label -->
+                  <div v-if="isIncognito" class="kb-incognito-active-center">
+                    <span class="inc-center-label">Monolog</span>
+                  </div>
                   <div 
+                    v-else
                     class="kb-suggestion-capsule" 
                     @click="cycleSuggestion"
                     title="Tap to cycle smart action suggestions"
@@ -612,10 +723,14 @@ const closeModal = () => {
                   <!-- M Context Diary Key (The Monolog Signature 3D White Button) -->
                   <button 
                     class="kb-tool-btn m-signature-btn" 
+                    :class="{ 'context-locked': isIncognito }"
                     @click="triggerContextButton" 
-                    title="Tap M key to snapshot screen context and voice note"
+                    :title="isIncognito ? 'Context capture locked during Incognito' : 'Tap M key to snapshot screen context and voice note'"
                   >
                     <img src="/monolog/monolog-logo.svg" alt="M Diary Key" class="m-signature-logo" />
+                    <span v-if="isIncognito" class="m-lock-badge">
+                      <Lock :size="9" />
+                    </span>
                   </button>
                 </div>
 
@@ -688,10 +803,15 @@ const closeModal = () => {
                       class="borderless-key mod-pill incognito-period-key" 
                       :class="{ 'incognito-active': isIncognito }"
                       @click="toggleIncognito"
-                      title="Tap or hold period to toggle Incognito (pauses memory capture)"
+                      title="Tap to toggle Incognito (pauses memory capture · zero keylogger)"
                     >
-                      <EyeOff :size="12" class="incognito-eye-icon" />
-                      <span class="period-dot">.</span>
+                      <svg class="inc-hat-mini-svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M2 10h20"/>
+                        <path d="M5 10a7 7 0 0 1 14 0"/>
+                        <circle cx="7" cy="16" r="3"/>
+                        <circle cx="17" cy="16" r="3"/>
+                        <path d="M10 16h4"/>
+                      </svg>
                     </button>
                     <button 
                       class="enter-action-key" 
@@ -746,6 +866,13 @@ const closeModal = () => {
               @click="activeDesignTab = 'ink'"
             >
               Ink Theme · AMOLED IME
+            </button>
+            <button 
+              class="d-tab" 
+              :class="{ active: activeDesignTab === 'privacy' }"
+              @click="activeDesignTab = 'privacy'"
+            >
+              Privacy First · Auto-Incognito
             </button>
             <button 
               class="d-tab" 
@@ -814,7 +941,20 @@ const closeModal = () => {
             </div>
           </div>
 
-          <!-- Tab Content 3: Journal Experience Flow (1–4) -->
+          <!-- Tab Content 4: Privacy First Sensitive Input Auto-Incognito Screen -->
+          <div v-show="activeDesignTab === 'privacy'" class="board-viewport phone-viewport" @click="openModal('/monolog/monolog-privacy-incognito.jpg')">
+            <img 
+              src="/monolog/monolog-privacy-incognito.jpg" 
+              alt="Monolog Privacy-First Sensitive Input Auto-Incognito Banking Screen" 
+              class="board-image phone-board-image"
+            />
+            <div class="board-overlay">
+              <Eye :size="16" />
+              <span>Click to inspect 1024 × 1536 Privacy-First Banking Screen</span>
+            </div>
+          </div>
+
+          <!-- Tab Content 5: Journal Experience Flow (1–4) -->
           <div v-show="activeDesignTab === 'flow'" class="wireframes-grid">
             <div 
               v-for="(screen, sIdx) in journalFlowScreens" 
@@ -834,7 +974,10 @@ const closeModal = () => {
 
           <!-- Design Footer -->
           <div class="board-footer-bar">
-            <span class="board-caption">
+            <span class="board-caption" v-if="activeDesignTab === 'privacy'">
+              Zero-Keylogger Guarantee: Real-time sensitive-input detection in Everyday Bank. When password or ID fields are focused, Monolog displays "Incognito is on · Sensitive input · Nothing saved", locks the context key, and halts all memory capture.
+            </span>
+            <span class="board-caption" v-else>
               Frosted translucent keys with soft pastel aurora edge blooms (icy cyan, lavender, soft mint) against deep ink charcoal.
             </span>
           </div>
@@ -935,6 +1078,145 @@ const closeModal = () => {
         </div>
       </section>
 
+      <!-- Section: // competitive advantage & market positioning -->
+      <section class="section-block" id="positioning">
+        <div class="section-header-row">
+          <h2 class="section-title">// competitive advantage · replaces 4–6 apps</h2>
+          <span class="section-meta-tag">Unified Workflow</span>
+        </div>
+
+        <div class="positioning-container frosted-glass-panel">
+          <!-- Top Narrative & Quantified Value -->
+          <div class="pos-hero-block">
+            <div class="pos-badge-pill">
+              <span class="p-dot-live"></span>
+              <span>1 Unified Keyboard vs. 4–6 Disconnected Point Solutions</span>
+            </div>
+            <h3 class="pos-main-headline">
+              One fluid keyboard workflow. Zero app-switching friction.
+            </h3>
+            <p class="pos-lead-body">
+              Monolog replaces 4–6 daily apps—competing with <strong>Gboard and SwiftKey</strong> for typing, <strong>Wispr Flow and Typeless</strong> for AI voice, <strong>Grammarly</strong> for writing, and <strong>Day One</strong> for journaling—within one unified, keyboard-first workflow. Rather than juggling disconnected point solutions, users can dictate naturally with Vox, refine text, query a floating AI search panel, and trigger reminders or phone actions without ever leaving their active app.
+            </p>
+            <p class="pos-lead-sub">
+              Eliminating <strong>30–50 daily app switches</strong> and the 10–20 seconds lost rebuilding context per switch saves <strong>5–15 minutes every day (30–90 hours annually)</strong>. With user consent, Monolog also auto-organizes key ideas, conversations, and moments into a private, searchable journal with timelines, a context library, and AI-generated daily and monthly narratives—cutting additional daily manual note-taking and retrieval time. Backed by local encrypted storage and strict cloud controls, Monolog delivers an effortless workflow today and a compounding personal memory system tomorrow.
+            </p>
+          </div>
+
+          <!-- 4 Pillars Comparison Matrix: Disconnected Apps vs Monolog -->
+          <div class="comp-matrix-grid">
+            <div class="comp-card">
+              <div class="comp-category-tag">TYPING IME</div>
+              <div class="comp-target-app">Gboard / SwiftKey</div>
+              <div class="comp-vs-arrow">↓ Replaced by Monolog</div>
+              <h4 class="comp-monolog-feat">Tactile Borderless Keyboard</h4>
+              <p class="comp-desc">Familiar QWERTY keys with on-device Gemma suggestions, Hardware Keystore encryption, and zero Google cloud keylogging.</p>
+            </div>
+
+            <div class="comp-card">
+              <div class="comp-category-tag">AI VOICE TYPING</div>
+              <div class="comp-target-app">Wispr Flow / Typeless</div>
+              <div class="comp-vs-arrow">↓ Replaced by Monolog</div>
+              <h4 class="comp-monolog-feat">Hardware Vox Key &amp; Drawer</h4>
+              <p class="comp-desc">Direct microphone stream with real-time waveform, on-device punctuation, formatting, and hands-free dictation into any Android app.</p>
+            </div>
+
+            <div class="comp-card">
+              <div class="comp-category-tag">WRITING &amp; REWRITES</div>
+              <div class="comp-target-app">Grammarly / LanguageTool</div>
+              <div class="comp-vs-arrow">↓ Replaced by Monolog</div>
+              <h4 class="comp-monolog-feat">In-Keyboard Rewrites &amp; Tone</h4>
+              <p class="comp-desc">Grammar cleanup, custom writing styles, and tone adjustments running locally via LiteRT-LM without sending personal drafts to cloud servers.</p>
+            </div>
+
+            <div class="comp-card">
+              <div class="comp-category-tag">PERSONAL MEMORY</div>
+              <div class="comp-target-app">Day One / Apple Journal</div>
+              <div class="comp-vs-arrow">↓ Replaced by Monolog</div>
+              <h4 class="comp-monolog-feat">Private Room Journal &amp; Timelines</h4>
+              <p class="comp-desc">Passive consent-based daily capture, OCR context library, and AI monthly narrative retrospectives created right from your everyday typing.</p>
+            </div>
+          </div>
+
+          <!-- Metrics Strip -->
+          <div class="pos-metrics-strip">
+            <div class="p-stat-box">
+              <span class="p-stat-num">4–6</span>
+              <span class="p-stat-label">Daily Apps Replaced</span>
+            </div>
+            <div class="p-stat-box">
+              <span class="p-stat-num">30–50</span>
+              <span class="p-stat-label">Daily App Switches Eliminated</span>
+            </div>
+            <div class="p-stat-box">
+              <span class="p-stat-num">5–15 min</span>
+              <span class="p-stat-label">Saved Daily (30–90 hrs/yr)</span>
+            </div>
+            <div class="p-stat-box highlight-stat">
+              <span class="p-stat-num">~20%</span>
+              <span class="p-stat-label">Wispr Flow Paid Conversion Proof</span>
+            </div>
+            <div class="p-stat-box highlight-stat">
+              <span class="p-stat-num">500K+</span>
+              <span class="p-stat-label">Typeless Android Downloads Evidence</span>
+            </div>
+          </div>
+
+          <!-- Bottom Split: The Venn Framework & Buildathon Pitch Deck Slide -->
+          <div class="pos-split-row">
+            <!-- Left: The 3-Circle Venn Diagram Visualization -->
+            <div class="venn-card">
+              <div class="venn-header">
+                <span class="venn-badge">PRODUCT POSITIONING</span>
+                <h4 class="venn-title">A Broader Everyday Use</h4>
+                <p class="venn-desc">Combining typing, phone actions, and long-term memory gives users continuous reasons to return throughout the day.</p>
+              </div>
+
+              <div class="venn-diagram-wrap">
+                <div class="venn-circle circle-type">
+                  <span class="c-title">TYPE &amp; SPEAK</span>
+                  <small>Keyboard + Vox</small>
+                </div>
+                <div class="venn-circle circle-action">
+                  <span class="c-title">TAKE ACTION</span>
+                  <small>Reminders + AI</small>
+                </div>
+                <div class="venn-circle circle-remember">
+                  <span class="c-title">REMEMBER</span>
+                  <small>Private Journal + Search</small>
+                </div>
+                <div class="venn-center-badge">
+                  <img src="/monolog/monolog-logo.svg" alt="Monolog" class="v-center-logo" />
+                  <span>Monolog</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Target Users, Market Demand & Slide Preview -->
+            <div class="target-market-card">
+              <div class="tm-top-info">
+                <div class="tm-audience-badge">FIRST TARGET USERS</div>
+                <h4 class="tm-heading">Android students &amp; young professionals</h4>
+                <p class="tm-sub">Users who message, dictate, and make plans throughout the day. Reached through campus clubs, productivity creators, and Android communities via short concept demos.</p>
+              </div>
+
+              <!-- Clickable Buildathon Pitch Deck Slide -->
+              <div class="tm-slide-preview" @click="openModal('/monolog/monolog-target-users-market.jpg')">
+                <img 
+                  src="/monolog/monolog-target-users-market.jpg" 
+                  alt="Monolog Startup Buildathon Pitch Slide: First Target Users and Market Demand" 
+                  class="tm-slide-img" 
+                />
+                <div class="tm-slide-overlay">
+                  <Search :size="15" />
+                  <span>Inspect Buildathon Slide (First Target Users &amp; Market) ↗</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- Section: // zero-keylogger privacy guarantee -->
       <section class="section-block" id="privacy">
         <div class="section-header-row">
@@ -961,8 +1243,12 @@ const closeModal = () => {
             </div>
             <div class="pillar-box">
               <span class="p-num font-mono">02</span>
-              <h4>Sensitive-Input Checks</h4>
-              <p>Automatic consent and input checks switch immediately to Incognito on passwords, OTPs, PINs, and banking fields.</p>
+              <h4>Sensitive-Input Checks (Auto-Incognito)</h4>
+              <p>Automatic consent and input checks switch immediately to Incognito on passwords, OTPs, PINs, and banking fields (e.g., Everyday Bank sign-in). All memory capture halts, the Context key is locked, and nothing is saved.</p>
+              <button class="inspect-incognito-link" @click="openModal('/monolog/monolog-privacy-incognito.jpg')">
+                <Eye :size="13" />
+                <span>View Everyday Bank Screen ↗</span>
+              </button>
             </div>
             <div class="pillar-box">
               <span class="p-num font-mono">03</span>
@@ -2338,6 +2624,233 @@ const closeModal = () => {
   border-radius: 1px;
 }
 
+/* App Selector Pills (Chat vs Sensitive Bank) */
+.sim-app-selector-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 3px;
+  border-radius: 9999px;
+  margin-bottom: 0.15rem;
+}
+
+.phone-device-chassis.light .sim-app-selector-bar {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+.app-sel-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.app-sel-btn:hover {
+  color: #f1f5f9;
+}
+
+.app-sel-btn.active {
+  background: #ffffff;
+  color: #050505;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.phone-device-chassis.light .app-sel-btn.active {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.bank-sel-btn.active {
+  background: #c084fc;
+  color: #050505;
+}
+
+/* Everyday Bank Host View (Sensitive Input) */
+.sim-host-screen-bank {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.2rem 0.15rem 0.3rem 0.15rem;
+}
+
+.bank-app-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.bank-back-arrow {
+  font-size: 1rem;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.bank-title-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.bank-pillar-icon {
+  font-size: 0.95rem;
+}
+
+.bank-brand-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.phone-device-chassis.light .bank-brand-title {
+  color: #0f172a;
+}
+
+.bank-form-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 0.75rem 0.95rem;
+}
+
+.phone-device-chassis.light .bank-form-body {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.bank-headline {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #f8fafc;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.phone-device-chassis.light .bank-headline {
+  color: #0f172a;
+}
+
+.bank-subheadline {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin: 0 0 0.25rem 0;
+}
+
+.bank-input-field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+}
+
+.bank-field-label {
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.bank-field-box {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9px;
+  padding: 0.4rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.phone-device-chassis.light .bank-field-box {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.bank-input-field.active-field .bank-field-box {
+  border-color: #f8fafc;
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.12);
+}
+
+.phone-device-chassis.light .bank-input-field.active-field .bank-field-box {
+  border-color: #0f172a;
+}
+
+.password-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.masked-pass {
+  letter-spacing: 0.12em;
+}
+
+.pass-eye-icon {
+  color: #94a3b8;
+}
+
+.bank-forgot-link {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  text-decoration: underline;
+  cursor: pointer;
+  align-self: flex-start;
+  margin-top: 0.1rem;
+}
+
+.bank-signin-button {
+  width: 100%;
+  background: #f8fafc;
+  color: #050505;
+  border: none;
+  border-radius: 9px;
+  padding: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.25rem;
+  transition: transform 0.15s ease;
+}
+
+.phone-device-chassis.light .bank-signin-button {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.bank-security-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.66rem;
+  color: #64748b;
+  margin-top: 0.1rem;
+}
+
 /* Simulated Host Chat Header */
 .sim-chat-header {
   display: flex;
@@ -2875,6 +3388,69 @@ const closeModal = () => {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
+/* Floating Incognito Active Banner (Sensitive Input Screen) */
+.incognito-banner-overlay {
+  background: #181920;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 0.5rem 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+}
+
+.phone-device-chassis.light .incognito-banner-overlay {
+  background: #0f172a;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.inc-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.inc-hat-svg {
+  color: #c084fc;
+  flex-shrink: 0;
+}
+
+.inc-banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.08rem;
+}
+
+.inc-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #f8fafc;
+  line-height: 1.2;
+}
+
+.inc-sub {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.inc-auto-tag {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 /* ==========================================================================
    THE REALISTIC BORDERLESS AURORA KEYBOARD UI
    ========================================================================== */
@@ -2905,6 +3481,24 @@ const closeModal = () => {
   justify-content: space-between;
   gap: 0.45rem;
   padding: 0 0.25rem 0.2rem 0.25rem;
+}
+
+.kb-incognito-active-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inc-center-label {
+  font-family: var(--font-cursive);
+  font-size: 1.15rem;
+  color: #f8fafc;
+  opacity: 0.9;
+}
+
+.phone-device-chassis.light .inc-center-label {
+  color: #0f172a;
 }
 
 .kb-chevron-btn {
@@ -3181,6 +3775,33 @@ const closeModal = () => {
   display: block;
 }
 
+.m-signature-btn.context-locked {
+  position: relative;
+}
+
+.m-lock-badge {
+  position: absolute;
+  bottom: -3px;
+  right: -3px;
+  width: 15px;
+  height: 15px;
+  background: #050505;
+  color: #c084fc;
+  border: 1px solid rgba(192, 132, 252, 0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.phone-device-chassis.light .m-lock-badge {
+  background: #ffffff;
+  color: #7c3aed;
+  border-color: #9333ea;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
 /* Borderless QWERTY Grid */
 .kb-keys-grid {
   display: flex;
@@ -3320,35 +3941,42 @@ const closeModal = () => {
   background: #dfe6ff;
 }
 
-/* Incognito Period Key */
+/* Incognito Key */
 .incognito-period-key {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  line-height: 1;
-  gap: 1px;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
 }
 
-.incognito-eye-icon {
-  opacity: 0.75;
+.inc-hat-mini-svg {
   color: #94a3b8;
-  transition: all 0.15s ease;
+  transition: color 0.2s ease;
 }
 
-.phone-device-chassis.light .incognito-eye-icon {
-  color: #64748b;
+.phone-device-chassis.light .inc-hat-mini-svg {
+  color: #475569;
 }
 
-.incognito-period-key.incognito-active .incognito-eye-icon {
-  opacity: 1;
-  color: var(--color-accent);
-  filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.5));
+.incognito-period-key.incognito-active {
+  background: rgba(192, 132, 252, 0.15) !important;
+  border: 1.5px solid #c084fc !important;
+  box-shadow: 0 0 14px rgba(192, 132, 252, 0.6), inset 0 0 6px rgba(139, 92, 246, 0.35);
 }
 
-.period-dot {
-  font-size: 1.1rem;
-  margin-top: -3px;
+.incognito-period-key.incognito-active .inc-hat-mini-svg {
+  color: #c084fc;
+}
+
+.phone-device-chassis.light .incognito-period-key.incognito-active {
+  background: rgba(147, 51, 234, 0.12) !important;
+  border-color: #9333ea !important;
+  box-shadow: 0 0 12px rgba(147, 51, 234, 0.35);
+}
+
+.phone-device-chassis.light .incognito-period-key.incognito-active .inc-hat-mini-svg {
+  color: #7c3aed;
 }
 
 /* Return Action Key */
@@ -4685,6 +5313,400 @@ const closeModal = () => {
 
 .dot-sep {
   opacity: 0.4;
+}
+
+/* Inspect Incognito Link */
+.inspect-incognito-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.65rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #c084fc;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.35rem 0.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+.inspect-incognito-link:hover {
+  background: rgba(192, 132, 252, 0.15);
+  border-color: #c084fc;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   Section: // competitive advantage & market positioning
+   ========================================================================== */
+.positioning-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  border-radius: 28px;
+  padding: 2.25rem 2rem;
+}
+
+.pos-hero-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  max-width: 950px;
+}
+
+.pos-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(249, 115, 22, 0.12);
+  border: 1px solid rgba(249, 115, 22, 0.35);
+  color: var(--color-accent);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  width: fit-content;
+}
+
+.p-dot-live {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 8px var(--color-accent);
+}
+
+.pos-main-headline {
+  font-size: clamp(1.4rem, 2.8vw, 2.1rem);
+  font-weight: 800;
+  color: #f8fafc;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.pos-lead-body {
+  font-size: 0.96rem;
+  color: #cbd5e1;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.pos-lead-body strong,
+.pos-lead-sub strong {
+  color: #f8fafc;
+}
+
+.pos-lead-sub {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* 4 Pillars Matrix Grid */
+.comp-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+.comp-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 1.35rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  position: relative;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.comp-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(249, 115, 22, 0.35);
+}
+
+.comp-category-tag {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+}
+
+.comp-target-app {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #64748b;
+  text-decoration: line-through;
+  opacity: 0.85;
+}
+
+.comp-vs-arrow {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  margin-top: -0.15rem;
+}
+
+.comp-monolog-feat {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #f8fafc;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.comp-desc {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Metrics Strip */
+.pos-metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 18px;
+  padding: 1.25rem 1.5rem;
+}
+
+.p-stat-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.p-stat-num {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #f8fafc;
+  line-height: 1;
+}
+
+.p-stat-label {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  line-height: 1.35;
+}
+
+.highlight-stat .p-stat-num {
+  color: #c084fc;
+}
+
+/* Bottom Split: Venn vs Target Market */
+.pos-split-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.venn-card,
+.target-market-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  padding: 1.5rem 1.65rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.venn-header,
+.tm-top-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.venn-badge,
+.tm-audience-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #c084fc;
+  letter-spacing: 0.06em;
+}
+
+.venn-title,
+.tm-heading {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.venn-desc,
+.tm-sub {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Venn Diagram Visualization */
+.venn-diagram-wrap {
+  position: relative;
+  width: 100%;
+  height: 230px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.venn-circle {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.5rem;
+  backdrop-filter: blur(8px);
+  transition: transform 0.25s ease;
+}
+
+.circle-type {
+  top: 10px;
+  left: calc(50% - 115px);
+  background: rgba(56, 189, 248, 0.16);
+  border: 1.5px solid rgba(56, 189, 248, 0.45);
+  color: #7dd3fc;
+}
+
+.circle-action {
+  top: 10px;
+  right: calc(50% - 115px);
+  background: rgba(192, 132, 252, 0.16);
+  border: 1.5px solid rgba(192, 132, 252, 0.45);
+  color: #d8b4fe;
+}
+
+.circle-remember {
+  bottom: 8px;
+  left: calc(50% - 70px);
+  background: rgba(52, 211, 153, 0.16);
+  border: 1.5px solid rgba(52, 211, 153, 0.45);
+  color: #6ee7b7;
+}
+
+.c-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.venn-circle small {
+  font-size: 0.62rem;
+  opacity: 0.85;
+}
+
+.venn-center-badge {
+  position: absolute;
+  top: calc(50% - 16px);
+  left: calc(50% - 46px);
+  width: 92px;
+  background: #0f172a;
+  border: 1px solid #f8fafc;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+  padding: 0.25rem 0.55rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-family: var(--font-cursive);
+  font-size: 0.88rem;
+  color: #f8fafc;
+  z-index: 5;
+}
+
+.v-center-logo {
+  width: 14px;
+  height: 14px;
+}
+
+/* Pitch Slide Preview */
+.tm-slide-preview {
+  position: relative;
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.tm-slide-preview:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  border-color: rgba(192, 132, 252, 0.45);
+}
+
+.tm-slide-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.tm-slide-overlay {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Responsive adjustments for positioning section */
+@media (max-width: 1100px) {
+  .comp-matrix-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .pos-metrics-strip {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 800px) {
+  .comp-matrix-grid {
+    grid-template-columns: 1fr;
+  }
+  .pos-metrics-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+  .pos-split-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 960px) {

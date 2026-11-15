@@ -50,7 +50,12 @@ flowchart TD
 - **Interface:** Smooth integration between the system keyboard IME, a floating Picture-in-Picture AI assistant drawer, and the standalone Monolog Journal application.
 
 ### 2.2 Private Memory System (Zero-Keylogger Guarantee)
-- **Consent & Filtering:** Only eligible, non-sensitive typing is captured. Automatic incognito switches instantly on passwords, OTPs, PINs, card numbers, and payment gateways.
+- **Consent & Filtering:** Only eligible, non-sensitive typing is captured. Automatic incognito switches instantly on passwords, OTPs, PINs, card numbers, and payment gateways based on Android `EditorInfo` input type flags.
+- **Sensitive-Input Auto-Incognito Screen:** Demonstrated in banking and authentication contexts (e.g., *Everyday Bank* sign-in). When sensitive input fields (`Customer ID`, `Password`) are active:
+  - An instant floating banner appears: **"Incognito is on · Sensitive input · Nothing saved"** with an **"Automatic"** badge.
+  - The signature `m` Context key displays a locked badge (`🔒`), preventing accidental screen capture.
+  - The incognito key lights up with a glowing halo ring.
+  - All keystroke logging, memory indexing, and Room database persistence are completely bypassed on-device.
 - **Encryption:** Keystrokes and metadata are encrypted using hardware-backed keys managed by **Android Keystore** before persistence into **Room** database tables and app-private media directories.
 - **Incognito & Snooze:** Manual incognito pauses memory capture, reflection indexing, and learning for a user-configurable duration (defaulting to 15 minutes), indicated by a visual status countdown on the keyboard toolbar.
 - **Outputs:** Power local on-device search, dated daily reflections, calendar timelines, and monthly narrative memory recaps. Raw typing never leaves the phone.
@@ -146,3 +151,51 @@ Monolog employs a transparent, privacy-first subscription model where core typin
 | **Monolog Pro** | **₹281 / month** (₹3,372 billed yearly) or **₹299 / month** | Unlimited Vox Pro dictation, writing styles & rewrites, Picture-in-Picture AI search, deep memory search across journals/context, weekly & monthly narrative recaps, multi-step routines | Explicit cloud triggers via Firebase App Check, Google Search grounding, verified action intents |
 
 - **Always Free Privacy Guarantee:** Hardware-backed encryption, incognito mode (defaulting to 15 minutes pause), and complete local data control are never gated behind a paywall.
+
+---
+
+## 7. Competitive Landscape, Positioning & Market Opportunity
+
+Monolog replaces 4–6 daily apps—competing with Gboard and SwiftKey for typing, Wispr Flow and Typeless for AI voice, Grammarly for writing, and Day One for journaling—within one unified, keyboard-first workflow. Rather than juggling disconnected point solutions, users can dictate naturally with Vox, refine text, query a floating AI search panel, and trigger reminders or phone actions without ever leaving their active app.
+
+### 7.1 Quantified Productivity Impact
+- **App Switching Fatigue:** Eliminates **30–50 daily app switches**.
+- **Time Savings:** Saving the 10–20 seconds lost rebuilding context per switch reclaims **5–15 minutes every day** (**30–90 hours annually**).
+- **Automated Memory Retrieval:** With user consent, Monolog auto-organizes key ideas, conversations, and moments into a private, searchable journal with timelines, a context library, and AI-generated daily and monthly narratives—cutting additional daily manual note-taking and retrieval time.
+- **Compounding Value:** Backed by local encrypted storage and strict cloud controls, Monolog delivers an effortless workflow today and a compounding personal memory system tomorrow.
+
+### 7.2 The Competitive Matrix
+
+| Functional Category | Disconnected Point Solutions | Monolog Unified Keyboard-First Workflow |
+| :--- | :--- | :--- |
+| **Typing IME** | Gboard, Microsoft SwiftKey | Borderless tactile IME, offline Gemma suggestions, privacy-first Keystore storage |
+| **AI Voice Dictation** | Wispr Flow, Typeless | Hardware mic stream, Vox mode soundwave, on-device Gemma punctuation & formatting |
+| **Writing & Rewrites** | Grammarly, LanguageTool | In-keyboard tone suggestions, grammar fixes, style rewrites without cloud leakage |
+| **Personal Memory** | Day One, Notion, Notes | Zero-keylogger consent, auto-organized daily timelines, Context Library, monthly recaps |
+| **System Actions** | Google Assistant, Siri | Validated local intents (Reminders, Alarms, Clock) with explicit single-tap confirmation |
+
+### 7.3 Product Positioning: A Broader Everyday Use
+
+```mermaid
+flowchart TD
+    subgraph Venn ["A Broader Everyday Use"]
+        A["TYPE & SPEAK<br/>(Keyboard + Vox)"]
+        B["TAKE ACTION<br/>(Reminders + AI)"]
+        C["REMEMBER<br/>(Private Journal + Search)"]
+    end
+    A --- D{{"★ Monolog ★"}}
+    B --- D
+    C --- D
+```
+
+### 7.4 Target Market & Go-To-Market Strategy
+- **First Target Users:** Android students and young professionals who message, dictate, and make plans throughout the day.
+- **Market Demand Evidence:**
+  - **~20% paid conversion** reported by Wispr Flow (demonstrates user willingness to pay for superior expression and voice).
+  - **500K+ Android downloads** for Typeless (demonstrates immense pent-up demand for smarter mobile input).
+  - Monolog builds on this proven demand with a broader everyday proposition: a keyboard that helps users write, act on plans, and remember useful details.
+- **GTM Channels:** Reaching early adopters through campus clubs, productivity creators, and Android communities via short concept demos showcasing familiar moments:
+  1. Speaking a message naturally with Vox.
+  2. Setting an Android reminder directly from a chat conversation.
+  3. Finding a saved detail instantly from private local memory.
+  User interviews and a private waitlist will identify which use case generates the strongest ongoing retention.
