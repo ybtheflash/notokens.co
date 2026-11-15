@@ -3,7 +3,6 @@ import { ref, computed } from 'vue'
 import {
   Shield,
   Zap,
-  Sparkles,
   ArrowLeft,
   FileText,
   Search,
@@ -11,27 +10,79 @@ import {
   Moon,
   X,
   Eye,
-  Mic
+  Mic,
+  Check,
+  ChevronDown,
+  Clock
 } from 'lucide-vue-next'
 
 // Keyboard interactive widget state
 const keyboardTheme = ref<'dark' | 'light'>('dark')
-const activeInputText = ref('Meeting with team at 4 PM, need to finalize the slides')
+const activeInputText = ref('We have exam at 5 PM?')
 const isAiDrawerOpen = ref(false)
+const isVoxDrawerOpen = ref(false)
+const isIncognito = ref(false)
 const contextToast = ref<string | null>(null)
 let toastTimer: number | null = null
 
+// Pricing plan state
+const billingCycle = ref<'yearly' | 'monthly'>('yearly')
+
+const triggerRestore = () => {
+  if (toastTimer) clearTimeout(toastTimer)
+  contextToast.value = '🔄 Checking Google Play Subscriptions & Keystore licenses...'
+  toastTimer = window.setTimeout(() => {
+    contextToast.value = null
+  }, 3500)
+}
+
+const triggerGetPro = () => {
+  if (toastTimer) clearTimeout(toastTimer)
+  const price = billingCycle.value === 'yearly' ? '₹3,372 / year (₹281/mo)' : '₹299 / month'
+  contextToast.value = `✨ Monolog Pro · Selected ${billingCycle.value} billing at ${price}`
+  toastTimer = window.setTimeout(() => {
+    contextToast.value = null
+  }, 3500)
+}
+
+const toggleIncognito = () => {
+  isIncognito.value = !isIncognito.value
+  if (toastTimer) clearTimeout(toastTimer)
+  if (isIncognito.value) {
+    contextToast.value = '🕶️ Incognito active · Memory capture paused for 15 min'
+  } else {
+    contextToast.value = '👁️ Memory capture resumed · Sensitive-input filtering active'
+  }
+  toastTimer = window.setTimeout(() => {
+    contextToast.value = null
+  }, 3500)
+}
+
 const suggestions = [
+  '⚡ Set 5 PM exam reminder',
   'call Amma at 6',
   'summarize my day',
   'what did I order?'
 ]
 
-const applySuggestion = (s: string) => {
-  activeInputText.value = s
+const currentSugIndex = ref(0)
+const currentSuggestion = computed(() => suggestions[currentSugIndex.value])
+
+const cycleSuggestion = () => {
+  currentSugIndex.value = (currentSugIndex.value + 1) % suggestions.length
+  applySuggestion(suggestions[currentSugIndex.value])
 }
 
-const isVoxDrawerOpen = ref(false)
+const applySuggestion = (s: string) => {
+  activeInputText.value = s
+  if (s.includes('reminder') || s.includes('Set 5 PM')) {
+    if (toastTimer) clearTimeout(toastTimer)
+    contextToast.value = '⏰ Intent parsed: "Exam reminder at 5:00 PM" · Ready for Android AlarmManager'
+    toastTimer = window.setTimeout(() => {
+      contextToast.value = null
+    }, 3500)
+  }
+}
 
 const toggleAiDrawer = () => {
   isAiDrawerOpen.value = !isAiDrawerOpen.value
@@ -259,86 +310,135 @@ const closeModal = () => {
             </div>
           </div>
 
-          <!-- Right: Interactive Frosted Aurora Keyboard Mockup -->
+          <!-- Right: Interactive Realistic Monolog Mobile Phone Keyboard Mockup -->
           <div class="hero-right">
-            <div class="keyboard-preview-wrapper" :class="[keyboardTheme]">
-              <!-- Widget Top Control Bar -->
-              <div class="widget-top-bar">
-                <div class="widget-dots">
-                  <span class="w-dot w-red"></span>
-                  <span class="w-dot w-yellow"></span>
-                  <span class="w-dot w-green"></span>
-                </div>
-                
-                <div class="theme-toggle-pills">
-                  <button 
-                    class="theme-btn" 
-                    :class="{ active: keyboardTheme === 'dark' }"
-                    @click="keyboardTheme = 'dark'"
-                    title="Ink Theme (Dark Aurora)"
-                  >
-                    <Moon :size="12" />
-                    <span>Ink</span>
-                  </button>
-                  <button 
-                    class="theme-btn" 
-                    :class="{ active: keyboardTheme === 'light' }"
-                    @click="keyboardTheme = 'light'"
-                    title="Paper Theme (Light Aurora)"
-                  >
-                    <Sun :size="12" />
-                    <span>Paper</span>
-                  </button>
+            <div class="phone-device-chassis" :class="[keyboardTheme]">
+              <!-- Realistic Android Status Bar -->
+              <div class="phone-status-bar">
+                <span class="status-time">9:41</span>
+                <div class="camera-punch-hole"></div>
+                <div class="status-right-icons">
+                  <div class="theme-toggle-micro">
+                    <button 
+                      class="theme-micro-btn" 
+                      :class="{ active: keyboardTheme === 'dark' }"
+                      @click="keyboardTheme = 'dark'"
+                      title="Ink Theme (Dark AMOLED)"
+                    >
+                      <Moon :size="10" />
+                      <span>Ink</span>
+                    </button>
+                    <button 
+                      class="theme-micro-btn" 
+                      :class="{ active: keyboardTheme === 'light' }"
+                      @click="keyboardTheme = 'light'"
+                      title="Paper Theme (Light Aurora)"
+                    >
+                      <Sun :size="10" />
+                      <span>Paper</span>
+                    </button>
+                  </div>
+                  <span class="network-badge">5G</span>
+                  <span class="battery-text">100%</span>
+                  <div class="battery-icon-pill">
+                    <div class="battery-level"></div>
+                  </div>
                 </div>
               </div>
 
-              <!-- Host App Input Field (Simulating WhatsApp / Chat typing) -->
-              <div class="sim-host-input-wrap">
-                <span class="input-label">Active Host App:</span>
-                <div class="sim-host-input">
-                  <span>{{ activeInputText }}</span>
+              <!-- Simulated Host App Header (Google Messages / Chat) -->
+              <div class="sim-chat-header">
+                <div class="chat-contact-info">
+                  <span class="chat-back-arrow">←</span>
+                  <div class="chat-avatar">S</div>
+                  <div class="chat-name-col">
+                    <span class="chat-contact-name">Sam</span>
+                  </div>
+                </div>
+                <span class="chat-more-dots">⋮</span>
+              </div>
+
+              <!-- Simulated Host Chat Messages -->
+              <div class="sim-chat-conversation">
+                <span class="chat-date-pill">TODAY</span>
+                <div class="chat-bubble bubble-received">
+                  <span>Did you check the timetable?</span>
+                </div>
+                <div class="chat-bubble bubble-sent">
+                  <span>Yes, just checked.</span>
+                </div>
+              </div>
+
+              <!-- Simulated Host Chat Input Field -->
+              <div class="sim-chat-input-bar">
+                <button class="chat-attach-btn" title="Add attachment">+</button>
+                <div class="chat-input-capsule">
+                  <span class="chat-input-text">{{ activeInputText }}</span>
                   <span class="cursor-blink">|</span>
                 </div>
+                <button 
+                  class="chat-send-btn" 
+                  title="Send message"
+                  @click="triggerContextButton"
+                >
+                  ↑
+                </button>
               </div>
 
-              <!-- Floating Picture-in-Picture AI Drawer (Triggered by spacebar or lightning) -->
+              <!-- Floating Picture-in-Picture AI Drawer (Matches AI Mode.png) -->
               <Transition name="slide-pip">
                 <div v-if="isAiDrawerOpen" class="pip-ai-drawer">
                   <div class="pip-header">
                     <div class="pip-title">
-                      <Sparkles :size="14" class="text-cyan" />
-                      <span>Gemini Flash · Picture-in-Picture</span>
+                      <Zap :size="13" class="text-orange" />
+                      <span>Monolog AI</span>
                     </div>
-                    <button class="pip-close" @click="isAiDrawerOpen = false" aria-label="Close">
-                      <X :size="13" />
-                    </button>
-                  </div>
-                  <div class="pip-body">
-                    <div class="pip-query">
-                      <Search :size="12" class="text-muted" />
-                      <span>"Flight details from Kolkata to Bengaluru tomorrow"</span>
-                    </div>
-                    <div class="pip-answer">
-                      Found 3 non-stop flights via Google Search grounding. Lowest fare ₹4,290 on 6E-6184.
-                    </div>
-                    <div class="pip-sources">
-                      <span class="source-tag">google.com/travel</span>
-                      <span class="source-tag">indigo.in</span>
-                      <button class="pip-paste-btn" @click="activeInputText = 'Flight 6E-6184 Kolkata to Bengaluru at ₹4,290'; isAiDrawerOpen = false">
-                        Copy into chat
+                    <div class="pip-actions">
+                      <span class="pip-expand-icon">⤢</span>
+                      <button class="pip-close" @click="isAiDrawerOpen = false" aria-label="Close">
+                        <X :size="13" />
                       </button>
+                    </div>
+                  </div>
+                  <div class="pip-search-box">
+                    <Search :size="13" class="search-icon" />
+                    <span>What should I pack for a day hike?</span>
+                  </div>
+                  <div class="pip-answer-card">
+                    <h5 class="pip-answer-heading">Pack light. Cover the essentials.</h5>
+                    <ul class="pip-answer-bullets">
+                      <li>Water and snacks</li>
+                      <li>Sun protection</li>
+                      <li>A light jacket</li>
+                    </ul>
+                    <div class="pip-sources-row">
+                      <span class="sources-link">🔗 View sources</span>
+                      <button 
+                        class="pip-insert-btn" 
+                        @click="activeInputText = 'Packing water, snacks, sun protection and a jacket for our hike!'; isAiDrawerOpen = false"
+                      >
+                        Insert into chat
+                      </button>
+                    </div>
+                  </div>
+                  <div class="pip-followup-bar">
+                    <span class="followup-placeholder">Ask a follow-up...</span>
+                    <div class="followup-icons">
+                      <Mic :size="12" class="f-mic" />
+                      <span class="f-send">➤</span>
                     </div>
                   </div>
                 </div>
               </Transition>
 
-              <!-- Floating Vox Mode Drawer (Triggered by Vox Key / Microphone) -->
+              <!-- Floating Vox Mode Drawer (Matches monolog-vox-mode.png) -->
               <Transition name="slide-pip">
                 <div v-if="isVoxDrawerOpen" class="vox-mode-drawer">
                   <div class="vox-header">
                     <div class="vox-title">
-                      <Mic :size="14" class="text-purple" />
-                      <span>Vox Mode · On-Device Dictation</span>
+                      <span class="vox-kb-icon">⌨</span>
+                      <span class="vox-divider">|</span>
+                      <span>Vox mode</span>
                     </div>
                     <button class="pip-close" @click="isVoxDrawerOpen = false" aria-label="Close">
                       <X :size="13" />
@@ -351,14 +451,18 @@ const closeModal = () => {
                     </div>
                     <!-- Audio Waveform Visualizer -->
                     <div class="vox-waveform">
-                      <span v-for="i in 18" :key="i" class="wave-bar" :style="{ animationDelay: `${(i % 6) * 0.12}s` }"></span>
+                      <span v-for="i in 22" :key="i" class="wave-bar" :style="{ animationDelay: `${(i % 7) * 0.11}s` }"></span>
                     </div>
                     <p class="vox-copy">
-                      Speak naturally. Words appear as you talk. Punctuation and formatting, handled.
+                      Speak naturally. Words appear as you talk.<br>Punctuation and formatting, handled.
                     </p>
                     <div class="vox-controls">
                       <span class="vox-lang-tag">English ▾</span>
-                      <button class="vox-done-btn" @click="activeInputText = 'Let\'s meet at the library at four. I\'ll bring the notes.'; isVoxDrawerOpen = false">
+                      <button class="vox-pause-btn" title="Pause recording">⏸</button>
+                      <button 
+                        class="vox-done-btn" 
+                        @click="activeInputText = 'Let\'s meet at the library at four. I\'ll bring the notes.'; isVoxDrawerOpen = false"
+                      >
                         Done
                       </button>
                     </div>
@@ -366,36 +470,30 @@ const closeModal = () => {
                 </div>
               </Transition>
 
-              <!-- Toast for Context Trigger -->
+              <!-- Toast Notification for Context Trigger -->
               <Transition name="fade">
                 <div v-if="contextToast" class="context-toast">
                   {{ contextToast }}
                 </div>
               </Transition>
 
-              <!-- The Monolog Frosted Aurora Keyboard -->
-              <div class="frosted-keyboard">
+              <!-- The Realistic Borderless Aurora Keyboard -->
+              <div class="borderless-keyboard">
                 <!-- Toolbar Row: Suggestions & Action Buttons -->
                 <div class="kb-toolbar">
-                  <!-- Lightning AI Button -->
-                  <button 
-                    class="kb-tool-btn ai-lightning-btn" 
-                    @click="toggleAiDrawer" 
-                    title="Tap or hold for AI Mode"
-                  >
-                    <Zap :size="14" />
+                  <!-- Collapse Keyboard Chevron -->
+                  <button class="kb-chevron-btn" title="Hide keyboard">
+                    <ChevronDown :size="16" />
                   </button>
 
-                  <!-- Suggestions Stream -->
-                  <div class="kb-suggestions">
-                    <button 
-                      v-for="(sug, idx) in suggestions" 
-                      :key="idx" 
-                      class="sug-chip"
-                      @click="applySuggestion(sug)"
-                    >
-                      {{ sug }}
-                    </button>
+                  <!-- Active Suggestion Capsule -->
+                  <div 
+                    class="kb-suggestion-capsule" 
+                    @click="cycleSuggestion"
+                    title="Tap to cycle smart action suggestions"
+                  >
+                    <Clock :size="13" class="sug-clock-icon" />
+                    <span class="sug-text">{{ currentSuggestion }}</span>
                   </div>
 
                   <!-- Vox Key (Microphone / Vox Mode) -->
@@ -403,62 +501,109 @@ const closeModal = () => {
                     class="kb-tool-btn vox-mic-btn" 
                     :class="{ active: isVoxDrawerOpen }"
                     @click="toggleVoxMode" 
-                    title="Vox Key · Tap for voice typing, hold to enter Vox mode"
+                    title="Vox Key · Tap for speech typing, hold for Vox Mode"
                   >
-                    <Mic :size="14" />
+                    <Mic :size="15" />
                     <span v-if="isVoxDrawerOpen" class="vox-pulse-dot"></span>
                   </button>
 
-                  <!-- M Context Diary Key (The Monolog Signature) -->
+                  <!-- M Context Diary Key (The Monolog Signature 3D White Button) -->
                   <button 
-                    class="kb-tool-btn m-diary-btn" 
+                    class="kb-tool-btn m-signature-btn" 
                     @click="triggerContextButton" 
-                    title="Tap M key to capture screen context & voice note"
+                    title="Tap M key to snapshot screen context and voice note"
                   >
-                    <img src="/monolog/monolog-logo.svg" alt="M Diary Key" class="m-key-icon" />
-                    <span class="m-aurora-pip"></span>
+                    <img src="/monolog/monolog-logo.svg" alt="M Diary Key" class="m-signature-logo" />
                   </button>
                 </div>
 
-                <!-- Keycap Rows (Frosted Glass QWERTY) -->
+                <!-- Borderless QWERTY Letter Grid (Uppercase, Clean Spacing) -->
                 <div class="kb-keys-grid">
-                  <!-- Row 1 -->
+                  <!-- Row 1: Q W E R T Y U I O P -->
                   <div class="kb-row">
-                    <span v-for="k in ['q','w','e','r','t','y','u','i','o','p']" :key="k" class="keycap">{{ k }}</span>
-                  </div>
-
-                  <!-- Row 2 -->
-                  <div class="kb-row indent-1">
-                    <span v-for="k in ['a','s','d','f','g','h','j','k','l']" :key="k" class="keycap">{{ k }}</span>
-                  </div>
-
-                  <!-- Row 3 -->
-                  <div class="kb-row">
-                    <span class="keycap key-mod">⇧</span>
-                    <span v-for="k in ['z','x','c','v','b','n','m']" :key="k" class="keycap">{{ k }}</span>
-                    <span class="keycap key-mod">⌫</span>
-                  </div>
-
-                  <!-- Row 4 -->
-                  <div class="kb-row row-spacebar">
-                    <span class="keycap key-mod">?123</span>
-                    <span class="keycap key-mod">,</span>
-                    <button 
-                      class="keycap key-spacebar" 
-                      @click="toggleAiDrawer"
-                      title="Hold spacebar for AI Search drawer"
+                    <span 
+                      v-for="k in ['Q','W','E','R','T','Y','U','I','O','P']" 
+                      :key="k" 
+                      class="borderless-key"
+                      @click="activeInputText += k.toLowerCase()"
                     >
-                      <Zap :size="12" class="space-icon" />
-                      <span>monolog</span>
+                      {{ k }}
+                    </span>
+                  </div>
+
+                  <!-- Row 2: A S D F G H J K L (Staggered indent) -->
+                  <div class="kb-row indent-row">
+                    <span 
+                      v-for="k in ['A','S','D','F','G','H','J','K','L']" 
+                      :key="k" 
+                      class="borderless-key"
+                      @click="activeInputText += k.toLowerCase()"
+                    >
+                      {{ k }}
+                    </span>
+                  </div>
+
+                  <!-- Row 3: Shift, Z X C V B N M, Backspace -->
+                  <div class="kb-row action-row-3">
+                    <button class="borderless-key mod-key shift-key" title="Shift">
+                      ↑
                     </button>
-                    <span class="keycap key-mod">.</span>
-                    <span class="keycap key-action">↵</span>
+                    <span 
+                      v-for="k in ['Z','X','C','V','B','N','M']" 
+                      :key="k" 
+                      class="borderless-key"
+                      @click="activeInputText += k.toLowerCase()"
+                    >
+                      {{ k }}
+                    </span>
+                    <button 
+                      class="borderless-key mod-key backspace-key" 
+                      title="Backspace"
+                      @click="activeInputText = activeInputText.slice(0, -1)"
+                    >
+                      ⌫
+                    </button>
+                  </div>
+
+                  <!-- Row 4 (Bottom Bar): ?123, Emoji/Globe, Spacebar (English ⚡), Incognito, Return -->
+                  <div class="kb-row bottom-controls-row">
+                    <button class="borderless-key mod-pill num-pill">
+                      ?123
+                    </button>
+                    <button class="borderless-key mod-pill emoji-globe-pill" title="Emoji & Language">
+                      <span>😊</span>
+                      <span class="globe-symbol">🌐</span>
+                    </button>
+                    <button 
+                      class="spacebar-capsule" 
+                      @click="toggleAiDrawer"
+                      title="Hold or tap spacebar for Picture-in-Picture AI search"
+                    >
+                      <span>English</span>
+                      <Zap :size="12" class="space-lightning-icon" />
+                    </button>
+                    <button 
+                      class="borderless-key mod-pill incognito-period-key" 
+                      :class="{ 'incognito-active': isIncognito }"
+                      @click="toggleIncognito"
+                      title="Tap or hold period to toggle Incognito (pauses memory capture)"
+                    >
+                      <span class="incognito-glasses">🕶️</span>
+                      <span class="period-dot">.</span>
+                    </button>
+                    <button 
+                      class="enter-action-key" 
+                      title="Return"
+                      @click="activeInputText += '\n'"
+                    >
+                      ↵
+                    </button>
                   </div>
                 </div>
 
-                <!-- Footer Hint -->
-                <div class="kb-hint-footer">
-                  <span>Hold spacebar for AI · Tap Vox <Mic :size="11" class="inline-vox-icon" /> to dictate · Tap <img src="/monolog/monolog-logo.svg" alt="Context Key" class="inline-hint-logo" /> for context</span>
+                <!-- Android Home Indicator Line -->
+                <div class="android-home-bar-wrap">
+                  <div class="android-home-indicator"></div>
                 </div>
               </div>
             </div>
@@ -788,6 +933,225 @@ const closeModal = () => {
             <span class="s-category">DEPLOYMENT</span>
             <h4>On-Device APK + Firebase / Cloud Run</h4>
             <p>Android app runs locally on user phone, backed by Firebase and Google Cloud with Cloud Run available for custom services.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: // pricing & plans -->
+      <section class="section-block" id="pricing">
+        <div class="section-header-row">
+          <h2 class="section-title">// plans &amp; pricing · transparent &amp; private</h2>
+          <span class="section-meta-tag">Simple Pricing</span>
+        </div>
+
+        <div class="pricing-showcase-container">
+          <div class="pricing-header-wrap">
+            <div class="pricing-badge-row">
+              <img src="/monolog/monolog-logo.svg" alt="Monolog" class="pricing-logo-icon" />
+              <span class="pricing-badge-text">MONOLOG PLANS</span>
+            </div>
+            <h3 class="pricing-main-title">More voice. Better words.</h3>
+            <p class="pricing-sub-title">Choose your Monolog plan. The core keyboard, on-device Gemma speech formatting, and encrypted local journal are always free.</p>
+          </div>
+
+          <div class="pricing-split-layout">
+            <!-- Left: Interactive Mobile Screen Recreation -->
+            <div class="pricing-phone-card frosted-glass-panel" :class="{ 'theme-paper': keyboardTheme === 'light' }">
+              <!-- Top bar inside phone card -->
+              <div class="plan-phone-header">
+                <button class="plan-back-btn" aria-label="Back">
+                  <ArrowLeft :size="16" />
+                </button>
+                <div class="plan-brand-pill">
+                  <img src="/monolog/monolog-logo.svg" alt="Monolog" class="plan-logo-img" />
+                  <span class="plan-brand-name">monolog</span>
+                </div>
+                <button class="plan-restore-btn" @click="triggerRestore">Restore</button>
+              </div>
+
+              <!-- Title inside phone card -->
+              <div class="plan-phone-headline">
+                <h4>More voice. Better words.</h4>
+                <p>Choose your Monolog plan.</p>
+              </div>
+
+              <!-- Plan 1: Free -->
+              <div class="plan-tier-card free-tier">
+                <div class="plan-tier-header">
+                  <span class="plan-name">Free</span>
+                  <span class="plan-price">₹0</span>
+                </div>
+                <ul class="plan-feature-list">
+                  <li>
+                    <span class="feat-icon">⌨</span>
+                    <span>Keyboard, local journals &amp; basic search</span>
+                  </li>
+                  <li>
+                    <span class="feat-icon">🎙️</span>
+                    <span>Basic voice typing &amp; grammar correction</span>
+                  </li>
+                  <li>
+                    <span class="feat-icon">☁️</span>
+                    <span>Limited monthly Vox &amp; cloud AI pool</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Plan 2: Monolog Pro (Featured) -->
+              <div class="plan-tier-card pro-tier">
+                <div class="plan-tier-header">
+                  <div class="pro-title-wrap">
+                    <span class="plan-name">Monolog Pro</span>
+                    <span class="plan-badge">FEATURED</span>
+                  </div>
+                  <span class="pro-lead-text">Everything in Free, plus</span>
+                </div>
+
+                <ul class="plan-feature-list pro-list">
+                  <li>
+                    <span class="feat-icon">🎙️</span>
+                    <div class="feat-text">
+                      <strong>Vox Pro</strong>
+                      <small>More voice typing, smart punctuation &amp; vocabulary</small>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="feat-icon">✏️</span>
+                    <div class="feat-text">
+                      <strong>Write with confidence</strong>
+                      <small>Grammar fixes, rewrites &amp; tone suggestions</small>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="feat-icon">🎛️</span>
+                    <div class="feat-text">
+                      <strong>Make it sound like you</strong>
+                      <small>Saved writing styles &amp; reusable instructions</small>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="feat-icon">🔍</span>
+                    <div class="feat-text">
+                      <strong>AI, without switching apps</strong>
+                      <small>More search, screenshot questions &amp; follow-ups</small>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="feat-icon">📖</span>
+                    <div class="feat-text">
+                      <strong>Ask your memories</strong>
+                      <small>Find answers across journals, notes &amp; context</small>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="feat-icon">📅</span>
+                    <div class="feat-text">
+                      <strong>Relive your month</strong>
+                      <small>Weekly summaries &amp; NNN monthly recaps</small>
+                    </div>
+                  </li>
+                  <li>
+                    <span class="feat-icon">⚡</span>
+                    <div class="feat-text">
+                      <strong>Do more, effortlessly</strong>
+                      <small>Multi-step routines &amp; beautifully formatted exports</small>
+                    </div>
+                  </li>
+                </ul>
+
+                <!-- Billing Cycle Selector (Monthly / Yearly) -->
+                <div class="plan-billing-selector">
+                  <!-- Monthly Option -->
+                  <div 
+                    class="billing-option-box" 
+                    :class="{ active: billingCycle === 'monthly' }"
+                    @click="billingCycle = 'monthly'"
+                  >
+                    <div class="b-details">
+                      <span class="b-label">Monthly</span>
+                      <span class="b-price">₹299</span>
+                      <span class="b-sub">per month</span>
+                    </div>
+                    <div class="b-radio-circle">
+                      <span v-if="billingCycle === 'monthly'" class="b-radio-dot"></span>
+                    </div>
+                  </div>
+
+                  <!-- Yearly Option -->
+                  <div 
+                    class="billing-option-box" 
+                    :class="{ active: billingCycle === 'yearly' }"
+                    @click="billingCycle = 'yearly'"
+                  >
+                    <div class="b-badge-wrap">
+                      <span class="b-savings-badge">Save 6%</span>
+                    </div>
+                    <div class="b-details">
+                      <span class="b-label">Yearly</span>
+                      <div class="b-price-row">
+                        <span class="b-price">₹281</span>
+                        <span class="b-sub">/ month</span>
+                      </div>
+                      <span class="b-billed-note">₹3,372 billed yearly</span>
+                    </div>
+                    <div class="b-radio-circle checked">
+                      <Check v-if="billingCycle === 'yearly'" :size="13" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Savings Banner -->
+                <div class="plan-savings-banner">
+                  <span v-if="billingCycle === 'yearly'">Save ₹216 a year compared with monthly billing.</span>
+                  <span v-else>Billed monthly at ₹299. Switch to Yearly to save ₹216 / year.</span>
+                </div>
+
+                <!-- Always Free Privacy Guarantee -->
+                <div class="plan-privacy-guarantee">
+                  <Shield :size="14" class="guarantee-shield" />
+                  <span>Encryption, incognito &amp; data control — always free.</span>
+                </div>
+
+                <!-- CTA Actions -->
+                <div class="plan-cta-wrap">
+                  <button class="plan-primary-cta" @click="triggerGetPro">
+                    <span>Get Monolog Pro</span>
+                  </button>
+                  <button class="plan-secondary-cta" @click="contextToast = 'Continuing with Monolog Free · Offline Gemma and local journal active'">
+                    Continue with Free
+                  </button>
+                </div>
+
+                <!-- Footer Disclaimer -->
+                <div class="plan-footer-disclaimer">
+                  <p>Renews automatically. Cancel anytime.</p>
+                  <div class="plan-legal-links">
+                    <span>Terms</span>
+                    <span class="dot-sep">•</span>
+                    <span>Privacy</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Real High-Res Phone Mockup Showcase (Click to Expand) -->
+            <div class="pricing-asset-showcase">
+              <div class="pricing-mockup-wrapper" @click="openModal('/monolog/pricing-plan.png')">
+                <img 
+                  src="/monolog/pricing-plan.png" 
+                  alt="Monolog Pro Subscription Screen" 
+                  class="pricing-mockup-img" 
+                />
+                <div class="mockup-hover-hint">
+                  <Search :size="14" />
+                  <span>Click to Inspect 1:1 Mobile Render ↗</span>
+                </div>
+              </div>
+              <div class="pricing-caption-note">
+                <span class="caption-title">Monolog Pro Subscription Screen</span>
+                <p class="caption-desc">Designed with Google Material 3 tactile components and local Keystore tier checks. On-device AI features remain 100% free forever.</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -1720,164 +2084,363 @@ const closeModal = () => {
 
 
 
-/* Interactive Keyboard Widget (True Frosted Glass) */
+/* ==========================================================================
+   REALISTIC MONOLOG MOBILE PHONE & BORDERLESS KEYBOARD
+   (Faithfully matching Canva / Figma high-res phone mockups)
+   ========================================================================== */
 .hero-right {
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
-.keyboard-preview-wrapper {
+/* Smartphone Device Chassis */
+.phone-device-chassis {
   width: 100%;
-  max-width: 440px;
-  background: rgba(15, 17, 26, 0.65);
-  backdrop-filter: blur(36px) saturate(190%);
-  -webkit-backdrop-filter: blur(36px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-top: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 26px;
-  padding: 1.35rem;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), 0 0 40px rgba(249, 115, 22, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  max-width: 410px;
+  background: #050505;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 40px;
+  padding: 1.15rem 1.15rem 0.85rem 1.15rem;
+  box-shadow: 
+    0 25px 70px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.85rem;
   position: relative;
-  transition: all 0.3s ease;
+  overflow: hidden;
+  transition: all 0.35s ease;
 }
 
-.keyboard-preview-wrapper.light {
+.phone-device-chassis.light {
   background: #ffffff;
-  border-color: rgba(15, 23, 42, 0.16);
+  border-color: rgba(15, 23, 42, 0.12);
+  box-shadow: 
+    0 25px 60px rgba(15, 23, 42, 0.12),
+    0 0 0 1px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
   color: #0f172a;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.10), 0 0 30px rgba(249, 115, 22, 0.08);
 }
 
-.widget-top-bar {
+/* Android Status Bar */
+.phone-status-bar {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.keyboard-preview-wrapper.light .widget-top-bar {
-  border-bottom-color: rgba(0, 0, 0, 0.08);
-}
-
-.widget-dots {
-  display: flex;
-  gap: 6px;
-}
-
-.w-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-}
-
-.w-red { background: #ef4444; }
-.w-yellow { background: #eab308; }
-.w-green { background: #22c55e; }
-
-.theme-toggle-pills {
-  display: flex;
-  gap: 4px;
-  background: rgba(255, 255, 255, 0.06);
-  padding: 3px;
-  border-radius: 9999px;
-  backdrop-filter: blur(10px);
-}
-
-.keyboard-preview-wrapper.light .theme-toggle-pills {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.theme-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-family: var(--font-mono);
+  padding: 0 0.4rem 0.15rem 0.4rem;
+  font-family: var(--font-sans);
   font-size: 0.72rem;
-  padding: 0.2rem 0.6rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.phone-device-chassis.light .phone-status-bar {
+  color: #0f172a;
+}
+
+.status-time {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.camera-punch-hole {
+  width: 10px;
+  height: 10px;
+  background: #111;
+  border-radius: 50%;
+  border: 1.5px solid #222;
+  box-shadow: inset 0 0 3px rgba(0,0,0,0.8);
+}
+
+.phone-device-chassis.light .camera-punch-hole {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.status-right-icons {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.theme-toggle-micro {
+  display: flex;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px;
+  border-radius: 9999px;
+  margin-right: 0.2rem;
+}
+
+.phone-device-chassis.light .theme-toggle-micro {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.theme-micro-btn {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  padding: 0.15rem 0.45rem;
   border-radius: 9999px;
   border: none;
   background: transparent;
-  color: var(--color-text-muted);
+  color: #94a3b8;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.theme-btn.active {
-  background: rgba(255, 255, 255, 0.16);
-  color: #fff;
+.theme-micro-btn.active {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
 }
 
-.keyboard-preview-wrapper.light .theme-btn.active {
-  background: #fff;
-  color: #0f172a;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+.phone-device-chassis.light .theme-micro-btn.active {
+  background: #0f172a;
+  color: #ffffff;
 }
 
-/* Sim Host Input Field */
-.sim-host-input-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
+.network-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
-.input-label {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--color-text-muted);
+.battery-text {
+  font-size: 0.65rem;
 }
 
-.sim-host-input {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  padding: 0.65rem 0.85rem;
-  font-size: 0.85rem;
-  color: #f3f4f6;
-  min-height: 40px;
+.battery-icon-pill {
+  width: 18px;
+  height: 9px;
+  border: 1.2px solid currentColor;
+  border-radius: 2.5px;
+  padding: 1px;
   display: flex;
   align-items: center;
-  gap: 2px;
+  position: relative;
 }
 
-.keyboard-preview-wrapper.light .sim-host-input {
-  background: #ffffff;
-  border-color: rgba(0, 0, 0, 0.1);
-  color: #0f172a;
+.battery-icon-pill::after {
+  content: '';
+  position: absolute;
+  right: -3px;
+  top: 2px;
+  width: 1.5px;
+  height: 3px;
+  background: currentColor;
+  border-radius: 0 1px 1px 0;
 }
 
-.cursor-blink {
-  color: var(--color-accent);
-  animation: blink 1s infinite;
+.battery-level {
+  width: 100%;
+  height: 100%;
+  background: currentColor;
+  border-radius: 1px;
 }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-/* Picture-in-Picture AI Drawer */
-.pip-ai-drawer {
-  background: rgba(18, 18, 24, 0.92);
-  border: 1px solid rgba(249, 115, 22, 0.45);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-radius: 16px;
-  padding: 0.95rem;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65), 0 0 25px rgba(249, 115, 22, 0.20);
+/* Simulated Host Chat Header */
+.sim-chat-header {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0.2rem;
+}
+
+.chat-contact-info {
+  display: flex;
+  align-items: center;
   gap: 0.6rem;
 }
 
-.keyboard-preview-wrapper.light .pip-ai-drawer {
-  background: rgba(255, 255, 255, 0.94);
-  border-color: rgba(249, 115, 22, 0.45);
-  box-shadow: 0 12px 30px rgba(100, 116, 139, 0.15);
+.chat-back-arrow {
+  font-size: 1rem;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.chat-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #334155;
+  color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.phone-device-chassis.light .chat-avatar {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.chat-contact-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.phone-device-chassis.light .chat-contact-name {
+  color: #0f172a;
+}
+
+.chat-more-dots {
+  color: #94a3b8;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+/* Chat Conversation Flow */
+.sim-chat-conversation {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.2rem 0.1rem;
+}
+
+.chat-date-pill {
+  align-self: center;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.chat-bubble {
+  max-width: 78%;
+  padding: 0.55rem 0.85rem;
+  border-radius: 18px;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.bubble-received {
+  align-self: flex-start;
+  background: #1d1d1f;
+  color: #f1f5f9;
+  border-bottom-left-radius: 4px;
+}
+
+.phone-device-chassis.light .bubble-received {
+  background: #f4f5f8;
+  color: #0f172a;
+}
+
+.bubble-sent {
+  align-self: flex-end;
+  background: #ffffff;
+  color: #050505;
+  font-weight: 500;
+  border-bottom-right-radius: 4px;
+}
+
+.phone-device-chassis.light .bubble-sent {
+  background: #1d1d1f;
+  color: #ffffff;
+}
+
+/* Host Input Field */
+.sim-chat-input-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.1rem 0;
+}
+
+.chat-attach-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.phone-device-chassis.light .chat-attach-btn {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.chat-input-capsule {
+  flex: 1;
+  background: #1d1d1f;
+  border-radius: 9999px;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.8rem;
+  color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.phone-device-chassis.light .chat-input-capsule {
+  background: #f4f5f8;
+  color: #0f172a;
+}
+
+.chat-input-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-send-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: #f8fafc;
+  color: #050505;
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.chat-send-btn:hover {
+  transform: scale(1.06);
+}
+
+.phone-device-chassis.light .chat-send-btn {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+/* Picture-in-Picture AI Drawer (Matches AI Mode.png) */
+.pip-ai-drawer {
+  background: #161618;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+}
+
+.phone-device-chassis.light .pip-ai-drawer {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 16px 40px rgba(100, 116, 139, 0.18);
 }
 
 .pip-header {
@@ -1889,85 +2452,162 @@ const closeModal = () => {
 .pip-title {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  gap: 0.35rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  color: var(--color-accent);
+  color: #f8fafc;
+}
+
+.phone-device-chassis.light .pip-title {
+  color: #0f172a;
+}
+
+.pip-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pip-expand-icon {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  cursor: pointer;
 }
 
 .pip-close {
   background: none;
   border: none;
-  color: var(--color-text-muted);
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.pip-search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.76rem;
+  color: #cbd5e1;
+}
+
+.phone-device-chassis.light .pip-search-box {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #334155;
+}
+
+.pip-answer-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 0.65rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.phone-device-chassis.light .pip-answer-card {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.pip-answer-heading {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.phone-device-chassis.light .pip-answer-heading {
+  color: #0f172a;
+}
+
+.pip-answer-bullets {
+  margin: 0;
+  padding-left: 1rem;
+  font-size: 0.74rem;
+  color: #94a3b8;
+  line-height: 1.45;
+}
+
+.phone-device-chassis.light .pip-answer-bullets {
+  color: #475569;
+}
+
+.pip-sources-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.2rem;
+}
+
+.sources-link {
+  font-size: 0.68rem;
+  color: #38bdf8;
   cursor: pointer;
 }
 
-.pip-query {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.78rem;
-  color: #9ca3af;
-  font-style: italic;
-}
-
-.pip-answer {
-  font-size: 0.82rem;
-  color: #f3f4f6;
-  line-height: 1.4;
-}
-
-.keyboard-preview-wrapper.light .pip-answer {
-  color: #1e293b;
-}
-
-.pip-sources {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-}
-
-.source-tag {
+.pip-insert-btn {
   font-family: var(--font-mono);
   font-size: 0.68rem;
-  padding: 0.15rem 0.45rem;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
-  color: #9ca3af;
-}
-
-.pip-paste-btn {
-  margin-left: auto;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
   background: rgba(249, 115, 22, 0.16);
   color: var(--color-accent);
   border: 1px solid rgba(249, 115, 22, 0.35);
   padding: 0.2rem 0.55rem;
   border-radius: 6px;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-/* Floating Vox Mode Drawer */
+.pip-insert-btn:hover {
+  background: var(--color-accent);
+  color: #ffffff;
+}
+
+.pip-followup-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 9999px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.74rem;
+  color: #64748b;
+}
+
+.phone-device-chassis.light .pip-followup-bar {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.followup-icons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #94a3b8;
+}
+
+/* Floating Vox Mode Drawer (Matches monolog-vox-mode.png) */
 .vox-mode-drawer {
-  background: rgba(18, 16, 26, 0.94);
+  background: #14131d;
   border: 1px solid rgba(192, 132, 252, 0.45);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-radius: 16px;
-  padding: 1rem;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7), 0 0 30px rgba(192, 132, 252, 0.2);
+  border-radius: 22px;
+  padding: 0.95rem;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.8), 0 0 25px rgba(192, 132, 252, 0.18);
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
 }
 
-.keyboard-preview-wrapper.light .vox-mode-drawer {
-  background: rgba(255, 255, 255, 0.96);
-  border-color: rgba(147, 51, 234, 0.4);
-  box-shadow: 0 12px 30px rgba(100, 116, 139, 0.15), 0 0 20px rgba(147, 51, 234, 0.1);
+.phone-device-chassis.light .vox-mode-drawer {
+  background: #ffffff;
+  border-color: rgba(147, 51, 234, 0.35);
+  box-shadow: 0 16px 45px rgba(100, 116, 139, 0.15), 0 0 20px rgba(147, 51, 234, 0.1);
 }
 
 .vox-header {
@@ -1979,36 +2619,43 @@ const closeModal = () => {
 .vox-title {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  gap: 0.45rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: #c084fc;
 }
 
-.keyboard-preview-wrapper.light .vox-title {
+.phone-device-chassis.light .vox-title {
   color: #7e22ce;
+}
+
+.vox-kb-icon {
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+.vox-divider {
+  color: #475569;
 }
 
 .vox-body {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
   align-items: center;
+  gap: 0.6rem;
 }
 
 .vox-status {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-family: var(--font-mono);
   font-size: 0.75rem;
-  color: #cbd5e1;
+  font-weight: 600;
+  color: #f1f5f9;
 }
 
-.keyboard-preview-wrapper.light .vox-status {
-  color: #334155;
-  font-weight: 600;
+.phone-device-chassis.light .vox-status {
+  color: #1e293b;
 }
 
 .vox-live-dot {
@@ -2020,39 +2667,37 @@ const closeModal = () => {
   animation: pulse-glow 1.2s infinite;
 }
 
-/* Soundwave Waveform Animation */
 .vox-waveform {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  height: 38px;
+  gap: 3.5px;
+  height: 42px;
   width: 100%;
-  padding: 0.2rem 0;
 }
 
 .wave-bar {
-  width: 3.5px;
+  width: 3px;
   height: 8px;
-  background: linear-gradient(180deg, #c084fc 0%, #818cf8 100%);
+  background: linear-gradient(180deg, #c084fc 0%, #60a5fa 100%);
   border-radius: 9999px;
   animation: wave-bounce 1.1s ease-in-out infinite alternate;
 }
 
 @keyframes wave-bounce {
-  0% { height: 6px; opacity: 0.4; }
-  100% { height: 32px; opacity: 1; }
+  0% { height: 6px; opacity: 0.35; }
+  100% { height: 36px; opacity: 1; }
 }
 
 .vox-copy {
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   color: #94a3b8;
   text-align: center;
   margin: 0;
   line-height: 1.4;
 }
 
-.keyboard-preview-wrapper.light .vox-copy {
+.phone-device-chassis.light .vox-copy {
   color: #475569;
 }
 
@@ -2067,26 +2712,45 @@ const closeModal = () => {
 .vox-lang-tag {
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  color: #94a3b8;
-  background: rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.08);
   padding: 0.25rem 0.55rem;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
-.keyboard-preview-wrapper.light .vox-lang-tag {
+.phone-device-chassis.light .vox-lang-tag {
   background: #f1f5f9;
   color: #334155;
 }
 
+.vox-pause-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #ffffff;
+  color: #050505;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.phone-device-chassis.light .vox-pause-btn {
+  background: #0f172a;
+  color: #ffffff;
+}
+
 .vox-done-btn {
   background: #c084fc;
-  color: #090a0d;
-  font-family: var(--font-mono);
-  font-size: 0.74rem;
+  color: #050505;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
   font-weight: 700;
   border: none;
-  border-radius: 6px;
-  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  padding: 0.35rem 0.95rem;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -2096,102 +2760,160 @@ const closeModal = () => {
   transform: scale(1.03);
 }
 
-.inline-vox-icon {
-  display: inline-block;
-  vertical-align: middle;
-  color: #c084fc;
-  margin: 0 1px;
-}
-
-/* Context Toast */
+/* Toast for Context Trigger */
 .context-toast {
-  background: rgba(249, 115, 22, 0.16);
+  background: rgba(15, 23, 42, 0.95);
   border: 1px solid rgba(249, 115, 22, 0.45);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
   color: #ffedd5;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   padding: 0.55rem 0.85rem;
-  border-radius: 10px;
+  border-radius: 12px;
   text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
-/* The Frosted Keyboard UI */
-.frosted-keyboard {
+.phone-device-chassis.light .context-toast {
+  background: rgba(255, 255, 255, 0.96);
+  color: #0f172a;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================================================
+   THE REALISTIC BORDERLESS AURORA KEYBOARD UI
+   ========================================================================== */
+.borderless-keyboard {
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
-  padding-top: 0.25rem;
+  padding-top: 0.35rem;
+  background: 
+    radial-gradient(circle at 85% 95%, rgba(139, 92, 246, 0.20) 0%, rgba(99, 102, 241, 0.10) 35%, transparent 70%),
+    radial-gradient(circle at 15% 90%, rgba(56, 189, 248, 0.12) 0%, transparent 60%),
+    #050505;
+  border-radius: 28px;
+  padding: 0.6rem 0.4rem 0.3rem 0.4rem;
+  transition: background 0.35s ease;
 }
 
-/* Toolbar Row */
+.phone-device-chassis.light .borderless-keyboard {
+  background: 
+    radial-gradient(circle at 85% 95%, rgba(242, 234, 254, 0.9) 0%, rgba(232, 237, 255, 0.6) 40%, transparent 75%),
+    #ffffff;
+}
+
+/* Keyboard Toolbar */
 .kb-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.4rem;
+  gap: 0.45rem;
+  padding: 0 0.25rem 0.2rem 0.25rem;
 }
 
-.kb-tool-btn {
+.kb-chevron-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.2rem;
+  border-radius: 6px;
+  transition: color 0.15s ease;
+}
+
+.kb-chevron-btn:hover {
+  color: #f1f5f9;
+}
+
+.phone-device-chassis.light .kb-chevron-btn:hover {
+  color: #0f172a;
+}
+
+.kb-suggestion-capsule {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #1d1d1f;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  color: #f1f5f9;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kb-suggestion-capsule:hover {
+  background: #2a2a2e;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.phone-device-chassis.light .kb-suggestion-capsule {
+  background: #f4f5f8;
+  border-color: rgba(0, 0, 0, 0.06);
+  color: #1e293b;
+}
+
+.phone-device-chassis.light .kb-suggestion-capsule:hover {
+  background: #e9ecf2;
+}
+
+.sug-clock-icon {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.sug-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Vox Key */
+.vox-mic-btn {
   width: 32px;
   height: 32px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(10px);
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #cbd5e1;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #d1d5db;
+  position: relative;
   transition: all 0.2s ease;
 }
 
-.keyboard-preview-wrapper.light .kb-tool-btn {
-  background: rgba(0, 0, 0, 0.04);
-  border-color: rgba(0, 0, 0, 0.08);
-  color: #475569;
-}
-
-.ai-lightning-btn {
-  color: var(--color-accent);
-  border-color: rgba(249, 115, 22, 0.35);
-}
-
-.ai-lightning-btn:hover {
-  background: rgba(249, 115, 22, 0.2);
-  box-shadow: 0 0 10px rgba(249, 115, 22, 0.3);
-}
-
-.vox-mic-btn {
-  position: relative;
+.vox-mic-btn:hover {
   color: #c084fc;
-  border-color: rgba(192, 132, 252, 0.4);
 }
 
-.vox-mic-btn:hover,
 .vox-mic-btn.active {
   background: rgba(192, 132, 252, 0.22);
-  border-color: rgba(192, 132, 252, 0.7);
-  box-shadow: 0 0 12px rgba(192, 132, 252, 0.45);
   color: #e9d5ff;
+  box-shadow: 0 0 0 4px rgba(192, 132, 252, 0.25);
 }
 
-.keyboard-preview-wrapper.light .vox-mic-btn {
-  color: #9333ea;
-  border-color: rgba(147, 51, 234, 0.35);
+.phone-device-chassis.light .vox-mic-btn {
+  color: #334155;
 }
 
-.keyboard-preview-wrapper.light .vox-mic-btn.active {
-  background: #f5f3ff;
-  border-color: #9333ea;
+.phone-device-chassis.light .vox-mic-btn.active {
+  background: #f3e8ff;
   color: #7e22ce;
+  box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.15);
 }
 
 .vox-pulse-dot {
   position: absolute;
-  top: 3px;
-  right: 3px;
+  top: 2px;
+  right: 2px;
   width: 6px;
   height: 6px;
   background: #c084fc;
@@ -2200,184 +2922,254 @@ const closeModal = () => {
   animation: pulse-glow 1.4s infinite;
 }
 
-.m-diary-btn {
-  position: relative;
-  font-weight: 800;
-  font-family: var(--font-mono);
-  color: var(--color-accent);
-  border-color: rgba(249, 115, 22, 0.4);
-}
-
-.m-diary-btn:hover {
-  background: rgba(249, 115, 22, 0.2);
-  box-shadow: 0 0 12px rgba(249, 115, 22, 0.4);
-}
-
-.m-aurora-pip {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--color-accent);
-  box-shadow: 0 0 8px var(--color-accent);
-}
-
-.kb-suggestions {
+/* M Signature Key (3D White Tactile Button) */
+.m-signature-btn {
+  width: 33px;
+  height: 33px;
+  border-radius: 10px;
+  border: none;
+  background: #ffffff;
   display: flex;
-  gap: 0.35rem;
-  flex: 1;
-  overflow-x: auto;
+  align-items: center;
   justify-content: center;
-}
-
-.sug-chip {
-  font-family: var(--font-sans);
-  font-size: 0.72rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #9ca3af;
-  white-space: nowrap;
   cursor: pointer;
-  transition: all 0.15s ease;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  flex-shrink: 0;
 }
 
-.sug-chip:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #f3f4f6;
+.m-signature-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.45);
 }
 
-.keyboard-preview-wrapper.light .sug-chip {
-  background: rgba(0, 0, 0, 0.03);
-  border-color: rgba(0, 0, 0, 0.06);
-  color: #64748b;
+.m-signature-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Frosted Glass Keycaps Grid */
+.phone-device-chassis.light .m-signature-btn {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.m-signature-logo {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+/* Borderless QWERTY Grid */
 .kb-keys-grid {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  padding: 0.1rem 0;
 }
 
 .kb-row {
   display: flex;
   justify-content: center;
-  gap: 4px;
+  gap: 2px;
+  width: 100%;
 }
 
-.kb-row.indent-1 {
-  padding: 0 10px;
+.indent-row {
+  padding: 0 4.5%;
 }
 
-.keycap {
+.action-row-3 {
+  display: flex;
+  align-items: center;
+}
+
+/* Borderless Keycaps */
+.borderless-key {
   flex: 1;
   max-width: 36px;
-  height: 38px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-top: 1px solid rgba(255, 255, 255, 0.24);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #f3f4f6;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", sans-serif;
+  font-size: 1.12rem;
+  font-weight: 450;
+  color: #ffffff;
   user-select: none;
   cursor: pointer;
-  transition: transform 0.1s ease, background 0.15s ease;
+  border-radius: 7px;
+  background: transparent;
+  border: none;
+  transition: background 0.12s ease;
 }
 
-.keycap:hover {
-  background: rgba(255, 255, 255, 0.14);
-  transform: translateY(-1px);
+.borderless-key:hover {
+  background: rgba(255, 255, 255, 0.10);
 }
 
-.keyboard-preview-wrapper.light .keycap {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-bottom: 2px solid #94a3b8;
+.borderless-key:active {
+  background: rgba(255, 255, 255, 0.20);
+  transform: scale(0.96);
+}
+
+.phone-device-chassis.light .borderless-key {
   color: #0f172a;
-  font-weight: 600;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
-.keyboard-preview-wrapper.light .keycap:hover {
-  background: #f8fafc;
-  border-color: #ea580c;
+.phone-device-chassis.light .borderless-key:hover {
+  background: rgba(0, 0, 0, 0.06);
 }
 
-.key-mod {
+.phone-device-chassis.light .borderless-key:active {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.mod-key {
+  font-size: 1.1rem;
+  color: #94a3b8;
+  max-width: 44px;
+}
+
+.phone-device-chassis.light .mod-key {
+  color: #475569;
+}
+
+/* Bottom Controls Row */
+.bottom-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding-top: 2px;
+}
+
+.mod-pill {
+  font-size: 0.85rem;
+  color: #cbd5e1;
   max-width: 46px;
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
 }
 
-.keyboard-preview-wrapper.light .key-mod {
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  border-bottom: 2px solid #94a3b8;
-  color: #0f172a;
-  font-weight: 700;
+.emoji-globe-pill {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.95rem;
 }
 
-.key-action {
-  max-width: 46px;
-  background: rgba(249, 115, 22, 0.18);
-  border-color: rgba(249, 115, 22, 0.45);
-  color: var(--color-accent);
+.globe-symbol {
+  font-size: 0.8rem;
+  opacity: 0.75;
 }
 
-.keyboard-preview-wrapper.light .key-action {
-  background: #ea580c;
-  border-color: #c2410c;
-  color: #ffffff;
-}
-
-.key-spacebar {
-  flex: 4;
-  max-width: 210px;
+/* Spacebar Capsule */
+.spacebar-capsule {
+  flex: 3.5;
+  height: 38px;
+  border-radius: 9999px;
+  background: #1d1d1f;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: #9ca3af;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-.keyboard-preview-wrapper.light .key-spacebar {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-bottom: 2px solid #94a3b8;
-  color: #0f172a;
-  font-weight: 700;
+.spacebar-capsule:hover {
+  background: #2a2a2e;
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
-.space-icon {
+.space-lightning-icon {
   color: var(--color-accent);
 }
 
-.kb-hint-footer {
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  color: var(--color-text-muted);
-  opacity: 0.7;
+.phone-device-chassis.light .spacebar-capsule {
+  background: #e8edff;
+  border-color: rgba(0, 0, 0, 0.05);
+  color: #1e293b;
 }
 
-.keyboard-preview-wrapper.light .kb-hint-footer {
-  color: #334155;
-  font-weight: 600;
+.phone-device-chassis.light .spacebar-capsule:hover {
+  background: #dfe6ff;
+}
+
+/* Incognito Period Key */
+.incognito-period-key {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  gap: 1px;
+}
+
+.incognito-glasses {
+  font-size: 0.78rem;
+  opacity: 0.8;
+}
+
+.incognito-period-key.incognito-active .incognito-glasses {
   opacity: 1;
+  filter: drop-shadow(0 0 4px #f97316);
+}
+
+.period-dot {
+  font-size: 1.1rem;
+  margin-top: -3px;
+}
+
+/* Return Action Key */
+.enter-action-key {
+  width: 44px;
+  height: 38px;
+  border-radius: 9999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-size: 1.15rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.enter-action-key:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.phone-device-chassis.light .enter-action-key {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.phone-device-chassis.light .enter-action-key:hover {
+  background: #1e293b;
+}
+
+/* Android Home Navigation Line */
+.android-home-bar-wrap {
+  display: flex;
+  justify-content: center;
+  padding-top: 0.45rem;
+}
+
+.android-home-indicator {
+  width: 120px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 9999px;
+}
+
+.phone-device-chassis.light .android-home-indicator {
+  background: rgba(0, 0, 0, 0.3);
 }
 
 /* Monolog Official Logo Elements */
@@ -3136,6 +3928,680 @@ const closeModal = () => {
 
 .slide-pip-enter-active, .slide-pip-leave-active { transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
 .slide-pip-enter-from, .slide-pip-leave-to { opacity: 0; transform: translateY(-8px); }
+
+/* ==========================================================================
+   PRICING & PLANS SECTION (100% Faithful to Monolog Pro Mobile Screen)
+   ========================================================================== */
+.pricing-showcase-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  margin-top: 1rem;
+}
+
+.pricing-header-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.pricing-badge-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  width: fit-content;
+}
+
+.pricing-logo-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.pricing-badge-text {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
+}
+
+.pricing-main-title {
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  font-weight: 800;
+  color: var(--color-hero-font);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.pricing-sub-title {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  max-width: 680px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.pricing-split-layout {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+/* Recreated Interactive Mobile Subscription Screen */
+.pricing-phone-card {
+  border-radius: 36px;
+  padding: 1.85rem 1.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  background: rgba(18, 19, 26, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+  position: relative;
+  overflow: hidden;
+}
+
+.monolog-page.theme-light-active .pricing-phone-card,
+.pricing-phone-card.theme-paper {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.12);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+  color: #0f172a;
+}
+
+.plan-phone-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.25rem;
+}
+
+.plan-back-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.2rem;
+}
+
+.plan-brand-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #ffffff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.plan-logo-img {
+  width: 18px;
+  height: 18px;
+}
+
+.plan-brand-name {
+  font-family: var(--font-cursive);
+  font-size: 1.15rem;
+  color: #050505;
+  font-weight: 400;
+}
+
+.plan-restore-btn {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: #94a3b8;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.plan-restore-btn:hover {
+  color: #f1f5f9;
+}
+
+.monolog-page.theme-light-active .plan-restore-btn:hover,
+.pricing-phone-card.theme-paper .plan-restore-btn:hover {
+  color: #0f172a;
+}
+
+.plan-phone-headline {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.plan-phone-headline h4 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #f8fafc;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.monolog-page.theme-light-active .plan-phone-headline h4,
+.pricing-phone-card.theme-paper .plan-phone-headline h4 {
+  color: #0f172a;
+}
+
+.plan-phone-headline p {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* Tier Cards */
+.plan-tier-card {
+  border-radius: 20px;
+  padding: 1.15rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.free-tier {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.monolog-page.theme-light-active .free-tier,
+.pricing-phone-card.theme-paper .free-tier {
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+.pro-tier {
+  background: 
+    radial-gradient(circle at 100% 0%, rgba(139, 92, 246, 0.15) 0%, transparent 60%),
+    radial-gradient(circle at 0% 100%, rgba(56, 189, 248, 0.10) 0%, transparent 60%),
+    rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(192, 132, 252, 0.35);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.monolog-page.theme-light-active .pro-tier,
+.pricing-phone-card.theme-paper .pro-tier {
+  background: 
+    radial-gradient(circle at 100% 0%, rgba(242, 234, 254, 0.8) 0%, transparent 60%),
+    radial-gradient(circle at 0% 100%, rgba(232, 237, 255, 0.8) 0%, transparent 60%),
+    #ffffff;
+  border-color: rgba(147, 51, 234, 0.25);
+  box-shadow: 0 10px 30px rgba(147, 51, 234, 0.06);
+}
+
+.plan-tier-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.plan-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.monolog-page.theme-light-active .plan-name,
+.pricing-phone-card.theme-paper .plan-name {
+  color: #0f172a;
+}
+
+.plan-price {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.monolog-page.theme-light-active .plan-price,
+.pricing-phone-card.theme-paper .plan-price {
+  color: #0f172a;
+}
+
+.pro-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.plan-badge {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  padding: 0.15rem 0.45rem;
+  background: rgba(192, 132, 252, 0.2);
+  border: 1px solid rgba(192, 132, 252, 0.4);
+  color: #c084fc;
+  border-radius: 9999px;
+  font-weight: 700;
+}
+
+.pro-lead-text {
+  font-size: 0.76rem;
+  color: #94a3b8;
+}
+
+/* Feature Lists */
+.plan-feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.plan-feature-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.monolog-page.theme-light-active .plan-feature-list li,
+.pricing-phone-card.theme-paper .plan-feature-list li {
+  color: #334155;
+}
+
+.feat-icon {
+  font-size: 0.95rem;
+  flex-shrink: 0;
+  line-height: 1.2;
+}
+
+.pro-list {
+  gap: 0.65rem;
+}
+
+.feat-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.feat-text strong {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.monolog-page.theme-light-active .feat-text strong,
+.pricing-phone-card.theme-paper .feat-text strong {
+  color: #0f172a;
+}
+
+.feat-text small {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  line-height: 1.35;
+}
+
+.monolog-page.theme-light-active .feat-text small,
+.pricing-phone-card.theme-paper .feat-text small {
+  color: #64748b;
+}
+
+/* Billing Selector */
+.plan-billing-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+  margin-top: 0.35rem;
+}
+
+.billing-option-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.billing-option-box:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.billing-option-box.active {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: #f8fafc;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.monolog-page.theme-light-active .billing-option-box,
+.pricing-phone-card.theme-paper .billing-option-box {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.monolog-page.theme-light-active .billing-option-box.active,
+.pricing-phone-card.theme-paper .billing-option-box.active {
+  background: #ffffff;
+  border-color: #0f172a;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+}
+
+.b-badge-wrap {
+  position: absolute;
+  top: -10px;
+  left: 10px;
+}
+
+.b-savings-badge {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  background: #c084fc;
+  color: #050505;
+  border-radius: 9999px;
+}
+
+.b-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.b-label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.monolog-page.theme-light-active .b-label,
+.pricing-phone-card.theme-paper .b-label {
+  color: #475569;
+}
+
+.b-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2rem;
+}
+
+.b-price {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.monolog-page.theme-light-active .b-price,
+.pricing-phone-card.theme-paper .b-price {
+  color: #0f172a;
+}
+
+.b-sub {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+.b-billed-note {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.b-radio-circle {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.billing-option-box.active .b-radio-circle {
+  border-color: #f8fafc;
+}
+
+.b-radio-circle.checked {
+  background: #f8fafc;
+  color: #050505;
+  border-color: #f8fafc;
+}
+
+.monolog-page.theme-light-active .b-radio-circle,
+.pricing-phone-card.theme-paper .b-radio-circle {
+  border-color: #cbd5e1;
+}
+
+.monolog-page.theme-light-active .b-radio-circle.checked,
+.pricing-phone-card.theme-paper .b-radio-circle.checked {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+.b-radio-dot {
+  width: 8px;
+  height: 8px;
+  background: #f8fafc;
+  border-radius: 50%;
+}
+
+.monolog-page.theme-light-active .b-radio-dot,
+.pricing-phone-card.theme-paper .b-radio-dot {
+  background: #0f172a;
+}
+
+/* Savings & Privacy Banners */
+.plan-savings-banner {
+  text-align: center;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  padding: 0.2rem 0;
+}
+
+.plan-privacy-guarantee {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  font-size: 0.74rem;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+}
+
+.monolog-page.theme-light-active .plan-privacy-guarantee,
+.pricing-phone-card.theme-paper .plan-privacy-guarantee {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.guarantee-shield {
+  color: var(--color-accent);
+}
+
+/* CTA Actions */
+.plan-cta-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 0.25rem;
+}
+
+.plan-primary-cta {
+  background: #f8fafc;
+  color: #050505;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.85rem 1.25rem;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.plan-primary-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(255, 255, 255, 0.25);
+}
+
+.monolog-page.theme-light-active .plan-primary-cta,
+.pricing-phone-card.theme-paper .plan-primary-cta {
+  background: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15);
+}
+
+.monolog-page.theme-light-active .plan-primary-cta:hover,
+.pricing-phone-card.theme-paper .plan-primary-cta:hover {
+  background: #1e293b;
+}
+
+.plan-secondary-cta {
+  background: transparent;
+  color: #94a3b8;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.4rem;
+  transition: color 0.15s ease;
+}
+
+.plan-secondary-cta:hover {
+  color: #f1f5f9;
+}
+
+.monolog-page.theme-light-active .plan-secondary-cta:hover,
+.pricing-phone-card.theme-paper .plan-secondary-cta:hover {
+  color: #0f172a;
+}
+
+/* Footer Disclaimer */
+.plan-footer-disclaimer {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.68rem;
+  color: #64748b;
+  margin-top: -0.2rem;
+}
+
+.plan-footer-disclaimer p {
+  margin: 0;
+}
+
+.plan-legal-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.dot-sep {
+  opacity: 0.5;
+}
+
+/* Right: High-Res Phone Mockup Showcase */
+.pricing-asset-showcase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.pricing-mockup-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  border-radius: 36px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.75), 0 0 40px rgba(192, 132, 252, 0.12);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pricing-mockup-wrapper:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85), 0 0 50px rgba(192, 132, 252, 0.22);
+}
+
+.pricing-mockup-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.mockup-hover-hint {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.pricing-caption-note {
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.caption-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.monolog-page.theme-light-active .caption-title {
+  color: #0f172a;
+}
+
+.caption-desc {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  line-height: 1.45;
+  margin: 0;
+}
+
+@media (max-width: 960px) {
+  .pricing-split-layout {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+}
 
 @media (max-width: 960px) {
   .hero-grid {

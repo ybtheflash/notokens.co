@@ -133,3 +133,16 @@ flowchart TD
   - Display Brand Logo: Custom cursive *Beth Ellen* lowercase script (`monolog`).
   - System Interface: JetBrains Mono and Inter / Roboto for legibility and monospace technical data.
 - **The Context Keycap:** The signature white keycap featuring the cursive `m` monogram, acting as the bridge between input and memory.
+
+---
+
+## 6. Plans & Pricing Architecture
+
+Monolog employs a transparent, privacy-first subscription model where core typing, on-device intelligence, and memory protections remain permanently free:
+
+| Tier | Price | Capabilities | Privacy & Execution |
+| :--- | :--- | :--- | :--- |
+| **Monolog Free** | **₹0** (Free Forever) | Borderless keyboard, encrypted Room journal, basic search, on-device voice typing & grammar correction, limited monthly Vox & cloud AI pool | 100% on-device Gemma AI, Android Keystore encryption, zero telemetry |
+| **Monolog Pro** | **₹281 / month** (₹3,372 billed yearly) or **₹299 / month** | Unlimited Vox Pro dictation, writing styles & rewrites, Picture-in-Picture AI search, deep memory search across journals/context, weekly & monthly narrative recaps, multi-step routines | Explicit cloud triggers via Firebase App Check, Google Search grounding, verified action intents |
+
+- **Always Free Privacy Guarantee:** Hardware-backed encryption, incognito mode (defaulting to 15 minutes pause), and complete local data control are never gated behind a paywall.
