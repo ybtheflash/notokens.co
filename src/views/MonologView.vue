@@ -10,27 +10,40 @@ import {
   Moon,
   X,
   Eye,
+  EyeOff,
   Mic,
   Check,
   ChevronDown,
-  Clock
+  Clock,
+  Bell,
+  BookOpen,
+  Edit3,
+  Sliders,
+  Calendar,
+  Layers,
+  Cloud,
+  Smile,
+  Globe
 } from 'lucide-vue-next'
 
-// Keyboard interactive widget state
-const keyboardTheme = ref<'dark' | 'light'>('dark')
+// Keyboard interactive widget state - Defaults to Paper theme
+const keyboardTheme = ref<'dark' | 'light'>('light')
 const activeInputText = ref('We have exam at 5 PM?')
 const isAiDrawerOpen = ref(false)
 const isVoxDrawerOpen = ref(false)
+const isVoxMenuOpen = ref(false)
 const isIncognito = ref(false)
 const contextToast = ref<string | null>(null)
 let toastTimer: number | null = null
+let voxHoldTimer: number | null = null
+let isHoldTriggered = false
 
 // Pricing plan state
 const billingCycle = ref<'yearly' | 'monthly'>('yearly')
 
 const triggerRestore = () => {
   if (toastTimer) clearTimeout(toastTimer)
-  contextToast.value = '🔄 Checking Google Play Subscriptions & Keystore licenses...'
+  contextToast.value = 'Checking Google Play subscriptions and Keystore licenses...'
   toastTimer = window.setTimeout(() => {
     contextToast.value = null
   }, 3500)
@@ -39,7 +52,7 @@ const triggerRestore = () => {
 const triggerGetPro = () => {
   if (toastTimer) clearTimeout(toastTimer)
   const price = billingCycle.value === 'yearly' ? '₹3,372 / year (₹281/mo)' : '₹299 / month'
-  contextToast.value = `✨ Monolog Pro · Selected ${billingCycle.value} billing at ${price}`
+  contextToast.value = `Monolog Pro · Selected ${billingCycle.value} billing at ${price}`
   toastTimer = window.setTimeout(() => {
     contextToast.value = null
   }, 3500)
@@ -49,9 +62,9 @@ const toggleIncognito = () => {
   isIncognito.value = !isIncognito.value
   if (toastTimer) clearTimeout(toastTimer)
   if (isIncognito.value) {
-    contextToast.value = '🕶️ Incognito active · Memory capture paused for 15 min'
+    contextToast.value = 'Incognito active · Memory capture paused for 15 minutes'
   } else {
-    contextToast.value = '👁️ Memory capture resumed · Sensitive-input filtering active'
+    contextToast.value = 'Memory capture resumed · Sensitive-input filtering active'
   }
   toastTimer = window.setTimeout(() => {
     contextToast.value = null
@@ -59,10 +72,10 @@ const toggleIncognito = () => {
 }
 
 const suggestions = [
-  '⚡ Set 5 PM exam reminder',
-  'call Amma at 6',
-  'summarize my day',
-  'what did I order?'
+  'Set 5 PM exam reminder',
+  'Call Amma at 6',
+  'Summarize my day',
+  'What did I order?'
 ]
 
 const currentSugIndex = ref(0)
@@ -77,7 +90,7 @@ const applySuggestion = (s: string) => {
   activeInputText.value = s
   if (s.includes('reminder') || s.includes('Set 5 PM')) {
     if (toastTimer) clearTimeout(toastTimer)
-    contextToast.value = '⏰ Intent parsed: "Exam reminder at 5:00 PM" · Ready for Android AlarmManager'
+    contextToast.value = 'Intent parsed: "Exam reminder at 5:00 PM" · Ready for Android AlarmManager'
     toastTimer = window.setTimeout(() => {
       contextToast.value = null
     }, 3500)
@@ -86,15 +99,70 @@ const applySuggestion = (s: string) => {
 
 const toggleAiDrawer = () => {
   isAiDrawerOpen.value = !isAiDrawerOpen.value
-  if (isAiDrawerOpen.value) isVoxDrawerOpen.value = false
+  if (isAiDrawerOpen.value) {
+    isVoxDrawerOpen.value = false
+    isVoxMenuOpen.value = false
+  }
+}
+
+const handleVoxMouseDown = () => {
+  isHoldTriggered = false
+  voxHoldTimer = window.setTimeout(() => {
+    isHoldTriggered = true
+    isVoxMenuOpen.value = true
+    if (toastTimer) clearTimeout(toastTimer)
+    contextToast.value = 'Quick Actions open · Choose Reminder, Alarm, or Journal'
+    toastTimer = window.setTimeout(() => { contextToast.value = null }, 3000)
+  }, 320)
+}
+
+const handleVoxMouseUp = () => {
+  if (voxHoldTimer) {
+    clearTimeout(voxHoldTimer)
+    voxHoldTimer = null
+  }
+}
+
+const handleVoxClick = () => {
+  if (!isHoldTriggered) {
+    isVoxMenuOpen.value = !isVoxMenuOpen.value
+    if (isVoxMenuOpen.value) {
+      isAiDrawerOpen.value = false
+      isVoxDrawerOpen.value = false
+    }
+  }
+  isHoldTriggered = false
+}
+
+const selectVoxAction = (action: 'reminder' | 'alarm' | 'journal' | 'vox') => {
+  isVoxMenuOpen.value = false
+  if (action === 'reminder') {
+    activeInputText.value = 'Remind me to study at 5 PM'
+    if (toastTimer) clearTimeout(toastTimer)
+    contextToast.value = 'Reminder intent parsed: "Study at 5:00 PM" · Ready for Android AlarmManager'
+    toastTimer = window.setTimeout(() => { contextToast.value = null }, 3500)
+  } else if (action === 'alarm') {
+    activeInputText.value = 'Set alarm for 7:00 AM'
+    if (toastTimer) clearTimeout(toastTimer)
+    contextToast.value = 'Alarm intent parsed: "Alarm at 7:00 AM" · Android Clock ready'
+    toastTimer = window.setTimeout(() => { contextToast.value = null }, 3500)
+  } else if (action === 'journal') {
+    activeInputText.value = 'Journal reflection: Great day with team, slides finished'
+    if (toastTimer) clearTimeout(toastTimer)
+    contextToast.value = 'Opening Monolog Journal · Daily timeline and encrypted reflection'
+    toastTimer = window.setTimeout(() => { contextToast.value = null }, 3500)
+  } else if (action === 'vox') {
+    toggleVoxMode()
+  }
 }
 
 const toggleVoxMode = () => {
   isVoxDrawerOpen.value = !isVoxDrawerOpen.value
   if (isVoxDrawerOpen.value) {
     isAiDrawerOpen.value = false
+    isVoxMenuOpen.value = false
     if (toastTimer) clearTimeout(toastTimer)
-    contextToast.value = '🎙️ Vox mode active · On-device Gemma speech formatting ready'
+    contextToast.value = 'Vox mode active · On-device Gemma speech formatting ready'
     toastTimer = window.setTimeout(() => {
       contextToast.value = null
     }, 3200)
@@ -103,7 +171,7 @@ const toggleVoxMode = () => {
 
 const triggerContextButton = () => {
   if (toastTimer) clearTimeout(toastTimer)
-  contextToast.value = '📸 Screen context captured & voice memo ready to attach'
+  contextToast.value = 'Screen context captured · Voice memo ready to attach'
   toastTimer = window.setTimeout(() => {
     contextToast.value = null
   }, 3500)
@@ -412,7 +480,7 @@ const closeModal = () => {
                       <li>A light jacket</li>
                     </ul>
                     <div class="pip-sources-row">
-                      <span class="sources-link">🔗 View sources</span>
+                      <span class="sources-link">View sources ↗</span>
                       <button 
                         class="pip-insert-btn" 
                         @click="activeInputText = 'Packing water, snacks, sun protection and a jacket for our hike!'; isAiDrawerOpen = false"
@@ -425,7 +493,7 @@ const closeModal = () => {
                     <span class="followup-placeholder">Ask a follow-up...</span>
                     <div class="followup-icons">
                       <Mic :size="12" class="f-mic" />
-                      <span class="f-send">➤</span>
+                      <span class="f-send">↑</span>
                     </div>
                   </div>
                 </div>
@@ -496,16 +564,51 @@ const closeModal = () => {
                     <span class="sug-text">{{ currentSuggestion }}</span>
                   </div>
 
-                  <!-- Vox Key (Microphone / Vox Mode) -->
-                  <button 
-                    class="kb-tool-btn vox-mic-btn" 
-                    :class="{ active: isVoxDrawerOpen }"
-                    @click="toggleVoxMode" 
-                    title="Vox Key · Tap for speech typing, hold for Vox Mode"
-                  >
-                    <Mic :size="15" />
-                    <span v-if="isVoxDrawerOpen" class="vox-pulse-dot"></span>
-                  </button>
+                  <!-- Vox Key Container with Floating Quick Shortcuts Popup -->
+                  <div class="vox-key-container">
+                    <Transition name="slide-pip">
+                      <div v-if="isVoxMenuOpen" class="vox-shortcuts-popup" @click.stop>
+                        <div class="vox-pop-header">
+                          <span class="vox-pop-title">Quick Actions</span>
+                          <button class="vox-pop-close" @click="isVoxMenuOpen = false" aria-label="Close">
+                            <X :size="11" />
+                          </button>
+                        </div>
+                        <div class="vox-pop-items">
+                          <button class="vox-pop-item" @click="selectVoxAction('reminder')">
+                            <Clock :size="13" class="pop-icon" />
+                            <span>Set Reminder</span>
+                          </button>
+                          <button class="vox-pop-item" @click="selectVoxAction('alarm')">
+                            <Bell :size="13" class="pop-icon" />
+                            <span>Set Alarm</span>
+                          </button>
+                          <button class="vox-pop-item" @click="selectVoxAction('journal')">
+                            <BookOpen :size="13" class="pop-icon" />
+                            <span>Open Journal</span>
+                          </button>
+                          <button class="vox-pop-item vox-dictate-opt" @click="selectVoxAction('vox')">
+                            <Mic :size="13" class="pop-icon" />
+                            <span>Voice Typing (Vox)</span>
+                          </button>
+                        </div>
+                      </div>
+                    </Transition>
+
+                    <button 
+                      class="kb-tool-btn vox-mic-btn" 
+                      :class="{ active: isVoxDrawerOpen || isVoxMenuOpen }"
+                      @mousedown="handleVoxMouseDown"
+                      @mouseup="handleVoxMouseUp"
+                      @touchstart="handleVoxMouseDown"
+                      @touchend="handleVoxMouseUp"
+                      @click="handleVoxClick" 
+                      title="Hold Vox Key for quick shortcuts (Reminder, Alarm, Journal) or tap for dictation"
+                    >
+                      <Mic :size="15" />
+                      <span v-if="isVoxDrawerOpen" class="vox-pulse-dot"></span>
+                    </button>
+                  </div>
 
                   <!-- M Context Diary Key (The Monolog Signature 3D White Button) -->
                   <button 
@@ -565,14 +668,14 @@ const closeModal = () => {
                     </button>
                   </div>
 
-                  <!-- Row 4 (Bottom Bar): ?123, Emoji/Globe, Spacebar (English ⚡), Incognito, Return -->
+                  <!-- Row 4 (Bottom Bar): ?123, Emoji/Globe, Spacebar (English), Incognito, Return -->
                   <div class="kb-row bottom-controls-row">
                     <button class="borderless-key mod-pill num-pill">
                       ?123
                     </button>
                     <button class="borderless-key mod-pill emoji-globe-pill" title="Emoji & Language">
-                      <span>😊</span>
-                      <span class="globe-symbol">🌐</span>
+                      <Smile :size="14" />
+                      <Globe :size="13" class="globe-symbol" />
                     </button>
                     <button 
                       class="spacebar-capsule" 
@@ -588,7 +691,7 @@ const closeModal = () => {
                       @click="toggleIncognito"
                       title="Tap or hold period to toggle Incognito (pauses memory capture)"
                     >
-                      <span class="incognito-glasses">🕶️</span>
+                      <EyeOff :size="12" class="incognito-eye-icon" />
                       <span class="period-dot">.</span>
                     </button>
                     <button 
@@ -983,15 +1086,17 @@ const closeModal = () => {
                 </div>
                 <ul class="plan-feature-list">
                   <li>
-                    <span class="feat-icon">⌨</span>
+                    <span class="feat-icon">
+                      <svg class="feat-icon-svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="8" x2="6" y2="8"/><line x1="10" y1="8" x2="10" y2="8"/><line x1="14" y1="8" x2="14" y2="8"/><line x1="18" y1="8" x2="18" y2="8"/><line x1="6" y1="12" x2="6" y2="12"/><line x1="10" y1="12" x2="10" y2="12"/><line x1="14" y1="12" x2="14" y2="12"/><line x1="18" y1="12" x2="18" y2="12"/><line x1="7" y1="16" x2="17" y2="16"/></svg>
+                    </span>
                     <span>Keyboard, local journals &amp; basic search</span>
                   </li>
                   <li>
-                    <span class="feat-icon">🎙️</span>
+                    <span class="feat-icon"><Mic :size="15" /></span>
                     <span>Basic voice typing &amp; grammar correction</span>
                   </li>
                   <li>
-                    <span class="feat-icon">☁️</span>
+                    <span class="feat-icon"><Cloud :size="15" /></span>
                     <span>Limited monthly Vox &amp; cloud AI pool</span>
                   </li>
                 </ul>
@@ -1009,49 +1114,49 @@ const closeModal = () => {
 
                 <ul class="plan-feature-list pro-list">
                   <li>
-                    <span class="feat-icon">🎙️</span>
+                    <span class="feat-icon"><Mic :size="15" /></span>
                     <div class="feat-text">
                       <strong>Vox Pro</strong>
                       <small>More voice typing, smart punctuation &amp; vocabulary</small>
                     </div>
                   </li>
                   <li>
-                    <span class="feat-icon">✏️</span>
+                    <span class="feat-icon"><Edit3 :size="15" /></span>
                     <div class="feat-text">
                       <strong>Write with confidence</strong>
                       <small>Grammar fixes, rewrites &amp; tone suggestions</small>
                     </div>
                   </li>
                   <li>
-                    <span class="feat-icon">🎛️</span>
+                    <span class="feat-icon"><Sliders :size="15" /></span>
                     <div class="feat-text">
                       <strong>Make it sound like you</strong>
                       <small>Saved writing styles &amp; reusable instructions</small>
                     </div>
                   </li>
                   <li>
-                    <span class="feat-icon">🔍</span>
+                    <span class="feat-icon"><Search :size="15" /></span>
                     <div class="feat-text">
                       <strong>AI, without switching apps</strong>
                       <small>More search, screenshot questions &amp; follow-ups</small>
                     </div>
                   </li>
                   <li>
-                    <span class="feat-icon">📖</span>
+                    <span class="feat-icon"><BookOpen :size="15" /></span>
                     <div class="feat-text">
                       <strong>Ask your memories</strong>
                       <small>Find answers across journals, notes &amp; context</small>
                     </div>
                   </li>
                   <li>
-                    <span class="feat-icon">📅</span>
+                    <span class="feat-icon"><Calendar :size="15" /></span>
                     <div class="feat-text">
                       <strong>Relive your month</strong>
                       <small>Weekly summaries &amp; NNN monthly recaps</small>
                     </div>
                   </li>
                   <li>
-                    <span class="feat-icon">⚡</span>
+                    <span class="feat-icon"><Layers :size="15" /></span>
                     <div class="feat-text">
                       <strong>Do more, effortlessly</strong>
                       <small>Multi-step routines &amp; beautifully formatted exports</small>
@@ -2875,6 +2980,131 @@ const closeModal = () => {
 }
 
 /* Vox Key */
+.vox-key-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vox-shortcuts-popup {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  right: -20px;
+  width: 175px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  padding: 0.5rem;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  animation: popUp 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.phone-device-chassis:not(.light) .vox-shortcuts-popup {
+  background: #18181b;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75);
+}
+
+.vox-pop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.15rem 0.35rem 0.3rem 0.35rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.phone-device-chassis:not(.light) .vox-pop-header {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.vox-pop-title {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.phone-device-chassis:not(.light) .vox-pop-title {
+  color: #94a3b8;
+}
+
+.vox-pop-close {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.vox-pop-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vox-pop-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.4rem 0.55rem;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: #0f172a;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.12s ease;
+}
+
+.phone-device-chassis:not(.light) .vox-pop-item {
+  color: #f1f5f9;
+}
+
+.vox-pop-item:hover {
+  background: #f1f5f9;
+  color: #ea580c;
+}
+
+.phone-device-chassis:not(.light) .vox-pop-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fb923c;
+}
+
+.pop-icon {
+  flex-shrink: 0;
+  color: #64748b;
+}
+
+.vox-pop-item:hover .pop-icon {
+  color: currentColor;
+}
+
+.vox-dictate-opt {
+  margin-top: 2px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding-top: 0.45rem;
+  color: #7c3aed;
+  font-weight: 600;
+}
+
+.phone-device-chassis:not(.light) .vox-dictate-opt {
+  border-top-color: rgba(255, 255, 255, 0.08);
+  color: #c084fc;
+}
+
 .vox-mic-btn {
   width: 32px;
   height: 32px;
@@ -3109,14 +3339,20 @@ const closeModal = () => {
   gap: 1px;
 }
 
-.incognito-glasses {
-  font-size: 0.78rem;
-  opacity: 0.8;
+.incognito-eye-icon {
+  opacity: 0.75;
+  color: #94a3b8;
+  transition: all 0.15s ease;
 }
 
-.incognito-period-key.incognito-active .incognito-glasses {
+.phone-device-chassis.light .incognito-eye-icon {
+  color: #64748b;
+}
+
+.incognito-period-key.incognito-active .incognito-eye-icon {
   opacity: 1;
-  filter: drop-shadow(0 0 4px #f97316);
+  color: var(--color-accent);
+  filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.5));
 }
 
 .period-dot {
@@ -4212,9 +4448,34 @@ const closeModal = () => {
 }
 
 .feat-icon {
-  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  line-height: 1.2;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  color: #64748b;
+}
+
+.monolog-page.theme-light-active .feat-icon,
+.pricing-phone-card.theme-paper .feat-icon {
+  color: #475569;
+}
+
+.pro-tier .feat-icon {
+  color: #c084fc;
+}
+
+.monolog-page.theme-light-active .pro-tier .feat-icon,
+.pricing-phone-card.theme-paper .pro-tier .feat-icon {
+  color: #7c3aed;
+}
+
+.feat-icon-svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
 }
 
 .pro-list {
