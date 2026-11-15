@@ -390,13 +390,14 @@ const closeModal = () => {
                 <span class="arrow">↗</span>
               </a>
               <a 
-                href="https://docs.google.com/presentation/d/1lAddxoSqFzeH3-FaXEhxkfMJ__UAF07P0fq48K10kQ0" 
+                href="/monolog/Monolog%20_%20NoTokens%20_%20Startup%20Buildathon%20Submission.pdf" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 class="meta-link-btn deck-btn"
+                title="Open Official Buildathon Submission Deck (PDF)"
               >
                 <FileText :size="13" />
-                <span>Submission Deck</span>
+                <span>Submission Deck (PDF)</span>
                 <span class="arrow">↗</span>
               </a>
             </div>
@@ -897,15 +898,17 @@ const closeModal = () => {
           </div>
 
           <!-- Tab Content 2: Vox Mode Voice Typing -->
-          <div v-show="activeDesignTab === 'vox'" class="board-viewport phone-viewport" @click="openModal('/monolog/monolog-vox-mode.png')">
-            <img 
-              src="/monolog/monolog-vox-mode.png" 
-              alt="Monolog Vox Mode On-Device Voice Typing" 
-              class="board-image phone-board-image"
-            />
-            <div class="board-overlay">
-              <Eye :size="16" />
-              <span>Click to inspect 1024 × 1536 Vox Mode Screen</span>
+          <div v-show="activeDesignTab === 'vox'" class="preview-phone-stage">
+            <div class="preview-phone-chassis" @click="openModal('/monolog/monolog-vox-mode.png')">
+              <img 
+                src="/monolog/monolog-vox-mode.png" 
+                alt="Monolog Vox Mode On-Device Voice Typing" 
+                class="preview-phone-screen-img"
+              />
+              <div class="board-overlay">
+                <Eye :size="15" />
+                <span>Click to inspect 1:1 Screen</span>
+              </div>
             </div>
           </div>
 
@@ -928,29 +931,33 @@ const closeModal = () => {
               </button>
             </div>
 
-            <div class="board-viewport phone-viewport" @click="openModal(currentInkImage)">
-              <img 
-                :src="currentInkImage" 
-                :alt="inkSubTab === 'keyboard' ? 'Monolog Ink Theme AMOLED Dark Keyboard' : 'Monolog Ink Theme AI Mode'" 
-                class="board-image phone-board-image"
-              />
-              <div class="board-overlay">
-                <Eye :size="16" />
-                <span>Click to inspect {{ inkSubTab === 'keyboard' ? '1024 × 1536 AMOLED Ink Keyboard' : '1024 × 1536 AMOLED AI Search' }}</span>
+            <div class="preview-phone-stage">
+              <div class="preview-phone-chassis" @click="openModal(currentInkImage)">
+                <img 
+                  :src="currentInkImage" 
+                  :alt="inkSubTab === 'keyboard' ? 'Monolog Ink Theme AMOLED Dark Keyboard' : 'Monolog Ink Theme AI Mode'" 
+                  class="preview-phone-screen-img"
+                />
+                <div class="board-overlay">
+                  <Eye :size="15" />
+                  <span>Click to inspect 1:1 Screen</span>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- Tab Content 4: Privacy First Sensitive Input Auto-Incognito Screen -->
-          <div v-show="activeDesignTab === 'privacy'" class="board-viewport phone-viewport" @click="openModal('/monolog/monolog-privacy-incognito.jpg')">
-            <img 
-              src="/monolog/monolog-privacy-incognito.jpg" 
-              alt="Monolog Privacy-First Sensitive Input Auto-Incognito Banking Screen" 
-              class="board-image phone-board-image"
-            />
-            <div class="board-overlay">
-              <Eye :size="16" />
-              <span>Click to inspect 1024 × 1536 Privacy-First Banking Screen</span>
+          <div v-show="activeDesignTab === 'privacy'" class="preview-phone-stage">
+            <div class="preview-phone-chassis" @click="openModal('/monolog/privacy.png')">
+              <img 
+                src="/monolog/privacy.png" 
+                alt="Monolog Privacy-First Sensitive Input Auto-Incognito Banking Screen" 
+                class="preview-phone-screen-img"
+              />
+              <div class="board-overlay">
+                <Eye :size="15" />
+                <span>Click to inspect 1:1 Screen</span>
+              </div>
             </div>
           </div>
 
@@ -1192,7 +1199,7 @@ const closeModal = () => {
               </div>
             </div>
 
-            <!-- Right: Target Users, Market Demand & Slide Preview -->
+            <!-- Right: Target Users, Market Demand & GTM Strategy -->
             <div class="target-market-card">
               <div class="tm-top-info">
                 <div class="tm-audience-badge">FIRST TARGET USERS</div>
@@ -1200,16 +1207,28 @@ const closeModal = () => {
                 <p class="tm-sub">Users who message, dictate, and make plans throughout the day. Reached through campus clubs, productivity creators, and Android communities via short concept demos.</p>
               </div>
 
-              <!-- Clickable Buildathon Pitch Deck Slide -->
-              <div class="tm-slide-preview" @click="openModal('/monolog/monolog-target-users-market.jpg')">
-                <img 
-                  src="/monolog/monolog-target-users-market.jpg" 
-                  alt="Monolog Startup Buildathon Pitch Slide: First Target Users and Market Demand" 
-                  class="tm-slide-img" 
-                />
-                <div class="tm-slide-overlay">
-                  <Search :size="15" />
-                  <span>Inspect Buildathon Slide (First Target Users &amp; Market) ↗</span>
+              <!-- GTM Strategy & Concept Demo Channels (Clean, No-Image Layout) -->
+              <div class="tm-channels-grid">
+                <div class="tm-channel-item">
+                  <span class="tm-c-num font-mono">01</span>
+                  <div class="tm-c-text">
+                    <strong>Campus Tech Clubs</strong>
+                    <small>Android developer circles and student study groups needing fast dictation and timetable reminders.</small>
+                  </div>
+                </div>
+                <div class="tm-channel-item">
+                  <span class="tm-c-num font-mono">02</span>
+                  <div class="tm-c-text">
+                    <strong>Productivity Creators</strong>
+                    <small>Short concept demos: speaking a message, setting a reminder from chat, searching saved context.</small>
+                  </div>
+                </div>
+                <div class="tm-channel-item">
+                  <span class="tm-c-num font-mono">03</span>
+                  <div class="tm-c-text">
+                    <strong>Android Communities</strong>
+                    <small>Power users seeking an AMOLED, keystore-encrypted alternative to Big Tech cloud keylogging.</small>
+                  </div>
                 </div>
               </div>
             </div>
@@ -4207,20 +4226,57 @@ const closeModal = () => {
   transition: transform 0.3s ease;
 }
 
-.phone-viewport {
-  padding: 1.5rem 0;
+.preview-phone-stage {
+  padding: 2.25rem 1rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: radial-gradient(circle at center, rgba(30, 41, 59, 0.4) 0%, rgba(9, 10, 13, 0.95) 70%);
+  background: radial-gradient(circle at center, rgba(30, 41, 59, 0.45) 0%, rgba(9, 10, 13, 0.95) 75%);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.phone-board-image {
-  max-height: 480px;
-  width: auto;
-  border-radius: 28px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+.preview-phone-chassis {
+  position: relative;
+  width: 100%;
+  max-width: 330px;
+  aspect-ratio: 9 / 19.5;
+  background: #050505;
+  border-radius: 44px;
+  border: 3px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 
+    0 25px 70px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+.preview-phone-chassis:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 
+    0 30px 85px rgba(0, 0, 0, 0.95),
+    0 0 0 1px rgba(255, 255, 255, 0.2),
+    0 0 45px rgba(192, 132, 252, 0.18);
+}
+
+.preview-phone-screen-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.08);
+  transform-origin: center center;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.preview-phone-chassis:hover .preview-phone-screen-img {
+  transform: scale(1.11);
 }
 
 .board-viewport:hover .board-image {
@@ -4246,50 +4302,57 @@ const closeModal = () => {
 
 .wireframes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.5rem;
 }
 
 .wf-card {
-  background: #090a0d;
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
+  border-radius: 28px;
   overflow: hidden;
   cursor: pointer;
-  padding: 0.75rem;
+  padding: 1.25rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 1rem;
   transition: all 0.25s ease;
 }
 
 .wf-card:hover {
   border-color: rgba(255, 107, 0, 0.45);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
 }
 
 .wf-img-wrap {
   width: 100%;
-  height: 240px;
+  max-width: 240px;
+  aspect-ratio: 9 / 19.5;
+  height: auto;
   overflow: hidden;
-  border-radius: 8px;
-  background: #050608;
+  border-radius: 36px;
+  background: #050505;
+  border: 2.5px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0 auto;
 }
 
 .wf-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: top center;
-  border-radius: 8px;
+  object-position: center;
+  transform: scale(1.08);
+  border-radius: 34px;
   transition: transform 0.3s ease;
 }
 
 .wf-card:hover .wf-img {
-  transform: scale(1.04);
+  transform: scale(1.12);
 }
 
 .wf-info {
@@ -4449,12 +4512,16 @@ const closeModal = () => {
   position: relative;
   width: 100%;
   max-width: 320px;
-  border-radius: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: transparent;
+  aspect-ratio: 9 / 19.5;
+  border-radius: 40px;
+  border: 2.5px solid rgba(255, 255, 255, 0.16);
+  background: #050505;
   overflow: hidden;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), 0 0 40px rgba(249, 115, 22, 0.12);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(249, 115, 22, 0.12);
   transition: transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .device-frame:hover {
@@ -4463,7 +4530,10 @@ const closeModal = () => {
 
 .device-screen {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.08);
   display: block;
 }
 
@@ -5644,47 +5714,53 @@ const closeModal = () => {
   height: 14px;
 }
 
-/* Pitch Slide Preview */
-.tm-slide-preview {
-  position: relative;
-  width: 100%;
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.tm-slide-preview:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-  border-color: rgba(192, 132, 252, 0.45);
-}
-
-.tm-slide-img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.tm-slide-overlay {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(15, 23, 42, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  padding: 0.35rem 0.85rem;
-  border-radius: 9999px;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: #f8fafc;
+/* GTM Channels List (No-Image Layout) */
+.tm-channels-grid {
   display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  white-space: nowrap;
-  pointer-events: none;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tm-channel-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 0.65rem 0.85rem;
+}
+
+.tm-c-num {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  background: rgba(249, 115, 22, 0.12);
+  border: 1px solid rgba(249, 115, 22, 0.3);
+  padding: 0.1rem 0.45rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.tm-c-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.tm-c-text strong {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.tm-c-text small {
+  font-size: 0.73rem;
+  color: #94a3b8;
+  line-height: 1.35;
 }
 
 /* Responsive adjustments for positioning section */
