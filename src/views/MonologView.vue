@@ -277,7 +277,7 @@ const closeModal = () => {
 </script>
 
 <template>
-  <div class="monolog-page" :class="{ 'theme-light-active': keyboardTheme === 'light' }">
+  <div class="monolog-page">
     <!-- Immersive Animated Orange Aurora & Gradient Glass Background System -->
     <div class="aurora-stage" aria-hidden="true">
       <div class="aurora-glow glow-corner-tl"></div>
@@ -351,7 +351,7 @@ const closeModal = () => {
               <span class="chip">Gemma On-Device</span>
               <span class="chip">Gemini Cloud</span>
               <span class="chip">Room + Keystore</span>
-              <span class="chip">100% Google Stack</span>
+              <span class="chip">Google Stack</span>
             </div>
 
             <!-- Outbound Links -->
@@ -1059,7 +1059,7 @@ const closeModal = () => {
 
           <div class="pricing-split-layout">
             <!-- Left: Interactive Mobile Screen Recreation -->
-            <div class="pricing-phone-card frosted-glass-panel" :class="{ 'theme-paper': keyboardTheme === 'light' }">
+            <div class="pricing-phone-card frosted-glass-panel">
               <!-- Top bar inside phone card -->
               <div class="plan-phone-header">
                 <button class="plan-back-btn" aria-label="Back">
