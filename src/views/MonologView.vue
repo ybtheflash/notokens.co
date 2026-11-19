@@ -333,6 +333,18 @@ const closeModal = () => {
 
         <div class="nav-right">
           <a 
+            href="https://monolog.notokens.co/" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="nav-pill live-site-pill"
+            title="Monolog — A keyboard. With a memory."
+          >
+            <span class="pill-dot live-dot"></span>
+            <span class="nav-pill-desktop">monolog.notokens.co ↗</span>
+            <span class="nav-pill-mobile">monolog ↗</span>
+          </a>
+
+          <a 
             href="https://startupbuildathon.com/" 
             target="_blank" 
             rel="noopener noreferrer" 
@@ -380,6 +392,17 @@ const closeModal = () => {
 
             <!-- Outbound Links -->
             <div class="hero-links">
+              <a 
+                href="https://monolog.notokens.co/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                class="meta-link-btn live-site-btn"
+                title="Monolog — A keyboard. With a memory."
+              >
+                <Globe :size="13" />
+                <span>Monolog — A keyboard. With a memory.</span>
+                <span class="arrow">↗</span>
+              </a>
               <a 
                 href="https://startupbuildathon.com/" 
                 target="_blank" 
@@ -1547,6 +1570,16 @@ const closeModal = () => {
               <span>Encryption, incognito &amp; data control — always free.</span>
             </div>
             <div class="p-trust-legal">
+              <a 
+                href="https://monolog.notokens.co/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                class="pricing-live-link"
+                title="Monolog — A keyboard. With a memory."
+              >
+                monolog.notokens.co ↗
+              </a>
+              <span class="dot-sep">•</span>
               <span>Renews automatically. Cancel anytime.</span>
               <span class="dot-sep">•</span>
               <span>Terms</span>
@@ -1599,6 +1632,12 @@ const closeModal = () => {
             <div class="terminal-row">
               <span class="prompt-symbol">&gt;</span>
               <span class="cmd-text">© 2026 No Tokens. Built for Startup Buildathon India 2026 submission.</span>
+            </div>
+            <div class="terminal-row terminal-link-row">
+              <span class="prompt-symbol">&gt;</span>
+              <span class="cmd-text">
+                Live app: <a href="https://monolog.notokens.co/" target="_blank" rel="noopener noreferrer" class="terminal-inline-link" title="Monolog — A keyboard. With a memory.">Monolog — A keyboard. With a memory. ↗</a>
+              </span>
             </div>
             <div class="terminal-quote-side">
               There's no AI without <em>I</em> in it.
@@ -1724,6 +1763,25 @@ const closeModal = () => {
   font-weight: 700;
 }
 
+.monolog-page.theme-light-active .live-site-pill {
+  background: #fff7ed !important;
+  border-color: #fdba74 !important;
+  color: #c2410c !important;
+  font-weight: 700;
+}
+
+.monolog-page.theme-light-active .live-site-pill:hover {
+  background: #ffedd5 !important;
+  border-color: #ea580c !important;
+  color: #9a3412 !important;
+  box-shadow: 0 0 16px rgba(234, 88, 12, 0.2) !important;
+}
+
+.monolog-page.theme-light-active .live-dot {
+  background: #ea580c !important;
+  box-shadow: 0 0 6px rgba(234, 88, 12, 0.6) !important;
+}
+
 .monolog-page.theme-light-active .back-pill {
   color: #334155 !important;
   font-weight: 600;
@@ -1770,6 +1828,39 @@ const closeModal = () => {
   background: #fefce8 !important;
   border-color: #fde047 !important;
   color: #854d0e !important;
+}
+
+.monolog-page.theme-light-active .live-site-btn {
+  background: #fff7ed !important;
+  border-color: #ea580c !important;
+  color: #c2410c !important;
+  font-weight: 700;
+  box-shadow: 0 2px 10px rgba(234, 88, 12, 0.12) !important;
+}
+
+.monolog-page.theme-light-active .live-site-btn:hover {
+  background: #ffedd5 !important;
+  border-color: #c2410c !important;
+  color: #9a3412 !important;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.2) !important;
+}
+
+.monolog-page.theme-light-active .pricing-live-link {
+  color: #c2410c !important;
+}
+
+.monolog-page.theme-light-active .pricing-live-link:hover {
+  color: #9a3412 !important;
+}
+
+.monolog-page.theme-light-active .terminal-inline-link {
+  color: #ea580c !important;
+  text-decoration-color: rgba(234, 88, 12, 0.4);
+}
+
+.monolog-page.theme-light-active .terminal-inline-link:hover {
+  color: #9a3412 !important;
+  text-decoration-color: #ea580c;
 }
 
 /* Section Headings in Light Mode */
@@ -2324,6 +2415,44 @@ const closeModal = () => {
   color: #ffedd5;
 }
 
+.live-site-pill {
+  border-color: rgba(249, 115, 22, 0.45);
+  background: rgba(249, 115, 22, 0.12);
+  color: #fed7aa;
+}
+
+.live-site-pill:hover {
+  background: rgba(249, 115, 22, 0.25);
+  border-color: rgba(249, 115, 22, 0.75);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+}
+
+.live-dot {
+  background: #f97316;
+  box-shadow: 0 0 8px #f97316;
+  animation: livePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+}
+
+.nav-pill-desktop {
+  display: inline;
+}
+
+.nav-pill-mobile {
+  display: none;
+}
+
 .pill-dot {
   width: 6px;
   height: 6px;
@@ -2481,6 +2610,22 @@ const closeModal = () => {
 .deck-btn:hover {
   background: rgba(250, 204, 21, 0.18);
   border-color: rgba(250, 204, 21, 0.6);
+}
+
+.live-site-btn {
+  color: #ffedd5;
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.22) 0%, rgba(234, 88, 12, 0.12) 100%);
+  border-color: rgba(249, 115, 22, 0.55);
+  box-shadow: 0 0 18px rgba(249, 115, 22, 0.18);
+  font-weight: 500;
+}
+
+.live-site-btn:hover {
+  color: #ffffff;
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.35) 0%, rgba(234, 88, 12, 0.22) 100%);
+  border-color: rgba(249, 115, 22, 0.85);
+  box-shadow: 0 0 25px rgba(249, 115, 22, 0.35);
+  transform: translateY(-1px);
 }
 
 
@@ -4836,6 +4981,23 @@ const closeModal = () => {
   color: #9ca3af;
 }
 
+.terminal-link-row {
+  margin-top: 0.2rem;
+}
+
+.terminal-inline-link {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(249, 115, 22, 0.4);
+  transition: all 0.2s ease;
+}
+
+.terminal-inline-link:hover {
+  color: #ffedd5;
+  text-decoration-color: var(--color-accent);
+}
+
 .terminal-quote-side {
   color: #f3f4f6;
   font-weight: 700;
@@ -5385,6 +5547,18 @@ const closeModal = () => {
   opacity: 0.4;
 }
 
+.pricing-live-link {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.pricing-live-link:hover {
+  color: #ffedd5;
+  text-decoration: underline;
+}
+
 /* Inspect Incognito Link */
 .inspect-incognito-link {
   display: inline-flex;
@@ -5831,6 +6005,12 @@ const closeModal = () => {
     padding: 0.24rem 0.52rem;
     font-size: 0.72rem;
     gap: 0.3rem;
+  }
+  .nav-pill-desktop {
+    display: none;
+  }
+  .nav-pill-mobile {
+    display: inline;
   }
 }
 </style>
