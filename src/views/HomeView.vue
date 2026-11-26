@@ -71,9 +71,9 @@ const bubbleParticles = [
           </a>
         </div>
         <div class="nav-right">
-          <router-link to="/monolog" class="nav-monolog-pill" title="Monolog — Startup Buildathon 2026">
+          <router-link to="/monolog" class="nav-monolog-pill" title="Monolog — Startup Buildathon 2026 Finalist">
             <span class="pill-dot"></span>
-            <span class="pill-text-desktop">Monolog (Buildathon '26)</span>
+            <span class="pill-text-desktop">Monolog (Finalist '26)</span>
             <span class="pill-text-mobile">Monolog '26</span>
           </router-link>
           <a href="mailto:hello@notokens.co" class="contact-link">
@@ -438,7 +438,7 @@ const bubbleParticles = [
         </p>
       </div>
 
-      <!-- Project 2: Monolog (Startup Buildathon India 2026 Submission) -->
+      <!-- Project 2: Monolog (Startup Buildathon India 2026 Finalist) -->
       <div class="project-card anim-item anim-3">
         <div class="project-card-header">
           <div class="otterspeak-branding monolog-branding">
@@ -446,7 +446,7 @@ const bubbleParticles = [
               <img src="/monolog/monolog-logo.svg" alt="Monolog Logo" class="monolog-home-icon" />
               <h2 class="otterspeak-text monolog-title">monolog</h2>
             </div>
-            <div class="otterspeak-beta">buildathon '26</div>
+            <div class="otterspeak-beta">finalist '26</div>
           </div>
           <div class="project-url-container">
             <router-link to="/monolog" class="project-url">
@@ -466,21 +466,53 @@ const bubbleParticles = [
                   </svg>
                   <span>notokens.co/monolog</span>
                 </div>
-                <span class="preview-badge-live">PREVIEWS</span>
+                <span class="preview-badge-live">FINALIST</span>
               </div>
-              <div class="preview-viewport">
-                <img 
-                  src="/monolog/monolog-aurora-themes.png" 
-                  alt="Monolog Keyboard Preview" 
-                  class="preview-image active-slide"
-                />
+              <div class="preview-viewport monolog-live-viewport">
+                <div class="mp-dual-preview">
+                  <div class="mp-card mp-paper">
+                    <div class="mp-card-head">
+                      <span>9:41</span>
+                      <span class="mp-tag">PAPER</span>
+                    </div>
+                    <div class="mp-msg-bubble">Let’s meet at the library at 4.</div>
+                    <div class="mp-mini-kb">
+                      <div class="mp-mini-pill">Rewrite · Set 4 PM reminder · <em>m</em></div>
+                      <div class="mp-mini-keys">
+                        <span>q</span><span>w</span><span>e</span><span>r</span><span>t</span><span>y</span><span>u</span><span>i</span>
+                      </div>
+                      <div class="mp-mini-keys">
+                        <span class="wide">?123</span><span class="space">English ⚡</span><span class="enter">↵</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mp-card mp-ink">
+                    <div class="mp-card-head">
+                      <span>9:41</span>
+                      <span class="mp-tag">INK AMOLED</span>
+                    </div>
+                    <div class="mp-vox-wave">
+                      <span></span><span></span><span></span><span></span><span></span><span></span>
+                      <small>VOX · Smart Filter</small>
+                    </div>
+                    <div class="mp-mini-kb">
+                      <div class="mp-mini-pill">AI Ask · Personal + Web</div>
+                      <div class="mp-mini-keys">
+                        <span>a</span><span>s</span><span>d</span><span>f</span><span>g</span><span>h</span><span>j</span><span>k</span>
+                      </div>
+                      <div class="mp-mini-keys">
+                        <span class="wide">?123</span><span class="space">AI Ask ⚡</span><span class="enter">↵</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         <p class="project-description anim-item anim-4">
-          <strong class="monolog-brand-lead">monolog</strong> combines an AI-powered Android keyboard, natural voice typing and a private, searchable journal. Built for <strong>Startup Buildathon India 2026</strong>.
+          <strong class="monolog-brand-lead">monolog.</strong> A keyboard. With a memory. Combines an Android-first AI keyboard, Vox voice typing, floating AI Ask search, and a private local journal. <strong>Google Startup Buildathon 2026 Finalist</strong> — live showcase at <a href="https://monolog.notokens.co/" target="_blank" rel="noopener noreferrer" style="color: var(--color-accent); text-decoration: underline;">monolog.notokens.co ↗</a>.
         </p>
       </div>
     </main>
@@ -1867,5 +1899,140 @@ const bubbleParticles = [
     top: -0.5rem;
     right: -1.75rem;
   }
+}
+
+/* Live Monolog Mini Preview inside Home Hover Card */
+.monolog-live-viewport {
+  padding: 10px;
+  display: flex;
+  align-items: stretch;
+  background: radial-gradient(circle at top right, rgba(249, 115, 22, 0.14), transparent 55%), #0c0d12 !important;
+}
+
+.mp-dual-preview {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+}
+
+.mp-card {
+  border-radius: 14px;
+  padding: 9px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.mp-card.mp-paper {
+  background: linear-gradient(155deg, #ffffff 30%, #e8effa 100%);
+  color: #151823;
+}
+
+.mp-card.mp-ink {
+  background: radial-gradient(circle at 15% 85%, rgba(88, 60, 140, 0.25), transparent 60%), #090a0e;
+  color: #f7f8fc;
+}
+
+.mp-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.mp-tag {
+  font-size: 8px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(128, 128, 128, 0.16);
+}
+
+.mp-msg-bubble {
+  font-size: 10px;
+  font-weight: 600;
+  background: rgba(21, 24, 35, 0.08);
+  padding: 5px 8px;
+  border-radius: 9px;
+}
+
+.mp-vox-wave {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: rgba(255, 255, 255, 0.07);
+  padding: 6px;
+  border-radius: 9px;
+}
+
+.mp-vox-wave span {
+  width: 2.5px;
+  height: 10px;
+  border-radius: 99px;
+  background: #a78bfa;
+}
+
+.mp-vox-wave span:nth-child(2n) {
+  height: 16px;
+}
+
+.mp-vox-wave small {
+  margin-left: 6px;
+  font-size: 9px;
+  color: #d1d5db;
+}
+
+.mp-mini-kb {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mp-mini-pill {
+  font-size: 8.5px;
+  font-weight: 600;
+  text-align: center;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: rgba(128, 128, 128, 0.14);
+}
+
+.mp-mini-keys {
+  display: flex;
+  gap: 3px;
+}
+
+.mp-mini-keys span {
+  flex: 1;
+  height: 17px;
+  border-radius: 4px;
+  background: rgba(128, 128, 128, 0.14);
+  font-size: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.mp-mini-keys .wide {
+  flex: 1.4;
+  font-size: 8px;
+}
+
+.mp-mini-keys .space {
+  flex: 3.4;
+  font-size: 8px;
+}
+
+.mp-mini-keys .enter {
+  flex: 1.3;
+  background: #f97316;
+  color: #ffffff;
 }
 </style>
