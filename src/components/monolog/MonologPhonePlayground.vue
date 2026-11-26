@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onBeforeUnmount } from 'vue'
 import {
   Shield,
   Zap,
@@ -16,7 +16,6 @@ import {
   Lock,
   Sparkles,
   Plus,
-  RotateCcw,
   Play,
   Pause,
 } from 'lucide-vue-next'
@@ -32,57 +31,9 @@ const privacyMode = ref<PrivacyMode>('off')
 const isShifted = ref(false)
 const isSymbols = ref(false)
 
-// 3D rotation & flip state
-const phoneSide = ref<'front' | 'rear'>('front')
-const phoneYaw = ref(-6)
-const phonePitch = ref(2)
-const isDraggingPhone = ref(false)
-let dragStart = { x: 0, y: 0, yaw: -6, pitch: 2 }
-
-const flipPhone = () => {
-  autoplayEnabled.value = false
-  if (phoneSide.value === 'front') {
-    phoneSide.value = 'rear'
-    phoneYaw.value = 180
-    phonePitch.value = 2
-  } else {
-    phoneSide.value = 'front'
-    phoneYaw.value = -6
-    phonePitch.value = 2
-  }
-}
-
-const onStagePointerDown = (e: PointerEvent) => {
-  const target = e.target as HTMLElement | null
-  if (!e.isPrimary || e.button !== 0 || target?.closest('button, input, textarea, a')) return
-  isDraggingPhone.value = true
-  dragStart = { x: e.clientX, y: e.clientY, yaw: phoneYaw.value, pitch: phonePitch.value }
-  ;(e.currentTarget as HTMLElement)?.setPointerCapture?.(e.pointerId)
-}
-
-const onStagePointerMove = (e: PointerEvent) => {
-  if (!isDraggingPhone.value) return
-  const dx = e.clientX - dragStart.x
-  const dy = e.clientY - dragStart.y
-  const nextYaw = dragStart.yaw + dx * 0.45
-  const baseYaw = phoneSide.value === 'rear' ? 180 : 0
-  phoneYaw.value = Math.max(baseYaw - 32, Math.min(baseYaw + 32, nextYaw))
-  phonePitch.value = Math.max(-14, Math.min(14, dragStart.pitch - dy * 0.25))
-}
-
-const onStagePointerUp = () => {
-  if (!isDraggingPhone.value) return
-  isDraggingPhone.value = false
-}
-
-const onRearLogoClick = () => {
-  theme.value = theme.value === 'ink' ? 'paper' : 'ink'
-  showToast(`Switched finish to ${theme.value === 'ink' ? 'Ink AMOLED' : 'Paper'}`)
-}
-
 const messages = ref([
-  { id: 1, from: 'them', text: 'Did you check the timetable?' },
-  { id: 2, from: 'me', text: 'Yes, just checked.' },
+  { id: 1, from: 'them', text: "I'll bring the notes. My exam's at 5." },
+  { id: 2, from: 'me', text: 'See you at the library.' },
 ])
 
 const activeInputText = ref("let's meet at the library at 5 pm")
@@ -100,13 +51,20 @@ const voxRaw = 'I’ll take the, uh, bus and be there by four.'
 const voxClean = 'I’ll take the bus and be there by four.'
 
 // AI Ask simulation state
-const aiQuery = ref('When does the study room close?')
+const aiQuery = ref('What should we bring for the hike?')
 const aiPersonal = ref(true)
 const aiWeb = ref(false)
 const aiSamples = [
   {
+    key: 'hike',
+    prompt: 'Hike essentials?',
+    query: 'What should we bring for the hike?',
+    answer: 'Water, a light layer, a charged phone, a small first-aid kit. And snacks.',
+    source: 'Sample answer · Product preview',
+  },
+  {
     key: 'library',
-    prompt: 'Study room hours?',
+    prompt: 'Study room?',
     query: 'When does the study room close?',
     answer: 'The study room closes at 8:00 PM. Last entry is at 7:30 PM.',
     source: 'Sample source · Riverside Library hours',
@@ -115,15 +73,8 @@ const aiSamples = [
     key: 'coffee',
     prompt: 'Coffee with Sam?',
     query: 'What did I note about coffee with Sam?',
-    answer: 'Coffee with Sam is saved in your journal entry for 15 November.',
-    source: 'Personal memory · 15 November',
-  },
-  {
-    key: 'hotel',
-    prompt: 'Hotel check-in?',
-    query: 'Hotel Namba check-in time',
-    answer: 'Check-in at Hotel Namba is at 3:00 PM (HND → ITM screenshot).',
-    source: 'Context Library · OCR extraction',
+    answer: 'Coffee with Sam is saved in your sample journal entry for 15 November.',
+    source: 'Sample journal · 15 November',
   },
 ]
 
@@ -143,11 +94,11 @@ const setPrivacy = (mode: PrivacyMode) => {
     activePanel.value = 'none'
     showToast(
       mode === 'protected'
-        ? 'Protected input (Pine Bank) · Memory paused for this field'
-        : 'Manual incognito active · Pauses memory capture for 15:00'
+        ? 'Protected input (pine-bank.example) · Memory paused automatically'
+        : 'Incognito · Pauses capture for 15:00'
     )
   } else {
-    showToast('Memory on · Consented drafts encrypted locally')
+    showToast('Memory on · Consented drafts saved locally')
   }
 }
 
@@ -188,7 +139,7 @@ const letterRows = [
 
 const symbolRows = [
   ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].map((k) => ({ k, sub: '' })),
-  ['@', '#', '$', '%', '&', '-', '+', '(', ')'].map((k) => ({ k, sub: '' })),
+  ['@', '#', '£', '_', '&', '-', '+', '(', ')'].map((k) => ({ k, sub: '' })),
   ['*', '"', "'", ':', ';', '!', '?'].map((k) => ({ k, sub: '' })),
 ]
 
@@ -211,7 +162,7 @@ const polishDraft = () => {
   if (isPrivate.value) return
   let txt = activeInputText.value.trim()
   if (!txt) {
-    txt = 'Let’s meet at the library at 5 PM.'
+    txt = 'Let’s meet at the library around four.'
   } else {
     txt = txt
       .replace(/\blets\b/gi, "let's")
@@ -221,14 +172,14 @@ const polishDraft = () => {
     if (!/[.!?]$/.test(txt)) txt += '.'
   }
   activeInputText.value = txt
-  showToast('Draft polished locally · Punctuation & capitalization checked')
+  showToast('Draft polished · Review before sending')
 }
 
 const onSuggestionClick = () => {
   const kind = suggestionChip.value.kind
   if (kind === 'privacy') return
   if (kind === 'rewrite') polishDraft()
-  else if (kind === 'reminder') showToast('Preview reminder: 5:00 PM today · Requires your confirmation')
+  else if (kind === 'reminder') showToast('Preview reminder: 5:00 PM today · Reviewed by you')
   else activePanel.value = activePanel.value === 'ai' ? 'none' : 'ai'
 }
 
@@ -245,8 +196,8 @@ const sendChat = () => {
   activeInputText.value = ''
   showToast(
     isPrivate.value
-      ? 'Sent cleanly · Private field bypassed memory'
-      : 'Message placed in demo thread · Eligible draft noted'
+      ? 'Sent cleanly · Protected field bypassed memory'
+      : 'Placed in preview chat · Eligible draft noted'
   )
 }
 
@@ -255,9 +206,9 @@ const matchedAiResult = computed(() => {
   return (
     aiSamples.find(
       (s) =>
-        (q.includes('library') || q.includes('study')) && s.key === 'library'
-        || (q.includes('coffee') || q.includes('sam')) && s.key === 'coffee'
-        || (q.includes('hotel') || q.includes('namba')) && s.key === 'hotel'
+        ((q.includes('hike') || q.includes('bring')) && s.key === 'hike')
+        || ((q.includes('library') || q.includes('study')) && s.key === 'library')
+        || ((q.includes('coffee') || q.includes('sam')) && s.key === 'coffee')
     ) || aiSamples[0]
   )
 })
@@ -271,7 +222,7 @@ const insertAiAnswer = () => {
 const insertVoxTranscript = () => {
   activeInputText.value = smartFilter.value ? voxClean : voxRaw
   activePanel.value = 'none'
-  showToast('Inserted Vox transcript into active field')
+  showToast('Inserted VOX transcript into draft')
 }
 
 const saveQuickNote = () => {
@@ -284,7 +235,7 @@ const saveQuickNote = () => {
 
 const toggleShortcuts = () => {
   if (isPrivate.value) {
-    showToast('Context key m is locked while memory capture is paused')
+    showToast('Context key m is locked while memory is paused')
     return
   }
   activePanel.value = activePanel.value === 'shortcuts' ? 'none' : 'shortcuts'
@@ -296,14 +247,12 @@ const selectShortcut = (action: 'Reminder' | 'Alarm' | 'Journal' | 'Note') => {
     return
   }
   activePanel.value = 'none'
-  if (action === 'Reminder') showToast('Reminder preview: Today at 5:00 PM · Review before saving')
+  if (action === 'Reminder') showToast('Reminder preview: Today at 6:00 PM · Call Amma · Review first')
   else if (action === 'Alarm') showToast('Alarm preview: 7:00 AM tomorrow · Android Clock ready')
-  else showToast('Journal action · Scroll to Companion Journal explorer below')
+  else showToast('Journal action · Explore Journal & Context Library below')
 }
 
-const cycleThemeLabel = computed(() => KEYBOARD_THEMES.find((t) => t.id === theme.value)?.label || 'Paper')
-
-// Guided Autoplay Walkthrough (yields cleanly to user interaction)
+// Optional Play Demo walkthrough (starts off so user controls the widget directly)
 const autoplayEnabled = ref(false)
 const autoplayStepLabel = ref<string | null>(null)
 let autoplayTimer: number | null = null
@@ -326,43 +275,40 @@ const autoplayScript: Array<{ delay: number; run: () => void }> = [
   {
     delay: 1400,
     run: () => {
-      phoneSide.value = 'front'
-      phoneYaw.value = -10
       privacyMode.value = 'off'
       activePanel.value = 'none'
-      activeInputText.value = 'lets meet at the library around four'
-      autoplayStepLabel.value = 'Step 1 · Natural draft'
+      activeInputText.value = 'lets meet at library around four'
+      autoplayStepLabel.value = 'Draft typing'
     },
   },
   {
     delay: 1500,
     run: () => {
       polishDraft()
-      autoplayStepLabel.value = 'Step 2 · Local polish & punctuation'
+      autoplayStepLabel.value = 'Rewrite & polish'
     },
   },
   {
     delay: 1600,
     run: () => {
       activeInputText.value = 'Exam at 5 PM today'
-      autoplayStepLabel.value = 'Step 3 · Contextual 5 PM reminder pill'
+      autoplayStepLabel.value = '5 PM reminder suggestion'
     },
   },
   {
-    delay: 1600,
+    delay: 1700,
     run: () => {
       activePanel.value = 'ai'
       aiQuery.value = 'When does the study room close?'
-      autoplayStepLabel.value = 'Step 4 · Floating AI Ask'
+      autoplayStepLabel.value = 'AI Ask floating panel'
     },
   },
   {
-    delay: 1900,
+    delay: 1800,
     run: () => {
       activePanel.value = 'none'
       setPrivacy('protected')
-      phoneYaw.value = 8
-      autoplayStepLabel.value = 'Step 5 · Pine Bank Auto-Incognito'
+      autoplayStepLabel.value = 'Protected field auto-incognito'
     },
   },
   {
@@ -371,15 +317,14 @@ const autoplayScript: Array<{ delay: number; run: () => void }> = [
       setPrivacy('off')
       activePanel.value = 'vox'
       smartFilter.value = true
-      phoneYaw.value = -6
-      autoplayStepLabel.value = 'Step 6 · Vox Smart Filter voice typing'
+      autoplayStepLabel.value = 'VOX Smart Filter dictation'
     },
   },
   {
-    delay: 2000,
+    delay: 1800,
     run: () => {
       activePanel.value = 'shortcuts'
-      autoplayStepLabel.value = 'Step 7 · Hold m for Quick Shortcuts'
+      autoplayStepLabel.value = 'm key Quick shortcuts'
     },
   },
 ]
@@ -401,16 +346,6 @@ const toggleAutoplay = () => {
   }
 }
 
-onMounted(() => {
-  const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-  if (!reduced) {
-    autoplayTimer = window.setTimeout(() => {
-      autoplayEnabled.value = true
-      scheduleNextDemoStep()
-    }, 900)
-  }
-})
-
 onBeforeUnmount(() => {
   if (autoplayTimer) clearTimeout(autoplayTimer)
 })
@@ -418,27 +353,28 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="playground-wrapper">
-    <!-- Controls Bar above Phone -->
+    <!-- Controls Bar -->
     <div class="pg-controls-card" @click.capture="pauseOnUserInteract">
-      <div class="pg-control-row">
-        <span class="pg-control-label font-mono">6 THEMES</span>
-        <div class="theme-pills-wrap" role="group" aria-label="Keyboard themes">
-          <button
-            v-for="t in KEYBOARD_THEMES"
-            :key="t.id"
-            class="theme-swatch-btn"
-            :class="{ active: theme === t.id }"
-            @click="theme = t.id"
-          >
-            <span class="swatch-dot" :style="{ background: t.swatch }"></span>
-            <span>{{ t.label }}</span>
-          </button>
+      <div class="pg-control-row pg-row-split">
+        <div class="pg-sub-group">
+          <span class="pg-control-label font-mono">6 THEMES</span>
+          <div class="theme-pills-wrap" role="group" aria-label="Keyboard themes">
+            <button
+              v-for="t in KEYBOARD_THEMES"
+              :key="t.id"
+              class="theme-swatch-btn"
+              :class="{ active: theme === t.id }"
+              @click="theme = t.id"
+            >
+              <span class="swatch-dot" :style="{ background: t.swatch }"></span>
+              <span>{{ t.label }}</span>
+            </button>
+          </div>
         </div>
       </div>
 
       <div class="pg-control-row pg-row-split">
         <div class="pg-sub-group">
-          <span class="pg-control-label font-mono">STYLE</span>
           <button
             class="pg-chip-btn"
             :class="{ active: keyBorders }"
@@ -460,13 +396,12 @@ onBeforeUnmount(() => {
         </div>
 
         <div class="pg-sub-group">
-          <span class="pg-control-label font-mono">PRIVACY</span>
           <button
             class="pg-chip-btn"
             :class="{ active: privacyMode === 'off' }"
             @click="setPrivacy('off')"
           >
-            Messages · Sam
+            Sam
           </button>
           <button
             class="pg-chip-btn"
@@ -483,61 +418,31 @@ onBeforeUnmount(() => {
             <Shield :size="11" />
             <span>Pine Bank</span>
           </button>
+          <button
+            class="pg-chip-btn play-btn"
+            :class="{ active: autoplayEnabled }"
+            @click.stop="toggleAutoplay"
+          >
+            <Pause v-if="autoplayEnabled" :size="10" />
+            <Play v-else :size="10" />
+            <span>{{ autoplayEnabled ? 'Pause demo' : 'Play demo' }}</span>
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- 3D Flip & Guided Walkthrough Toolbar -->
-    <div class="pg-3d-toolbar">
-      <div class="pg-3d-left">
-        <span class="font-mono pg-hint-text">6.7" Interactive Phone · {{ autoplayStepLabel || 'Tap or drag edge to tilt' }}</span>
-      </div>
-      <div class="pg-3d-actions">
-        <button class="pg-3d-btn" :class="{ running: autoplayEnabled }" @click="toggleAutoplay">
-          <Pause v-if="autoplayEnabled" :size="11" />
-          <Play v-else :size="11" />
-          <span>{{ autoplayEnabled ? 'Pause Demo' : 'Play Demo' }}</span>
-        </button>
-        <button class="pg-3d-btn" @click="flipPhone">
-          <RotateCcw :size="11" />
-          <span>{{ phoneSide === 'front' ? 'View back' : 'View front' }}</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Realistic 3D Flippable Smartphone Chassis -->
+    <!-- Flat Interactive Keyboard & App Preview Widget (No 3D phone hardware model) -->
     <div
-      class="phone-3d-stage"
-      :class="{ dragging: isDraggingPhone }"
-      @pointerdown="onStagePointerDown"
-      @pointermove="onStagePointerMove"
-      @pointerup="onStagePointerUp"
-      @pointercancel="onStagePointerUp"
+      class="keyboard-widget-card"
+      :data-theme="theme"
+      :data-borders="String(keyBorders)"
+      :data-layout="layoutMode"
+      :data-privacy="privacyMode"
+      @click.capture="pauseOnUserInteract"
     >
-      <div
-        class="phone-3d-body"
-        :style="{
-          transform: `rotateX(${phonePitch}deg) rotateY(${phoneYaw}deg)`
-        }"
-      >
-        <div
-          class="phone-chassis phone-face-front"
-          :class="{ 'is-inert': phoneSide === 'rear' }"
-          :data-theme="theme"
-          :data-borders="String(keyBorders)"
-          :data-layout="layoutMode"
-          :data-privacy="privacyMode"
-          @click.capture="pauseOnUserInteract"
-        >
-      <!-- Status Bar -->
-      <div class="phone-status-bar">
-        <span class="status-time">9:41</span>
-        <div class="camera-punch-hole"></div>
-        <div class="status-right">
-          <span class="theme-status-tag font-mono">{{ cycleThemeLabel }}</span>
-          <span class="net-tag">5G</span>
-          <div class="battery-pill"><div class="battery-fill"></div></div>
-        </div>
+      <div class="widget-top-strip font-mono">
+        <span>monolog · interactive preview</span>
+        <span class="theme-status-tag">{{ autoplayStepLabel || theme }}</span>
       </div>
 
       <!-- Screen A: Host Messages App -->
@@ -547,7 +452,7 @@ onBeforeUnmount(() => {
             <div class="peer-avatar">S</div>
             <div>
               <strong class="peer-name">Sam</strong>
-              <small class="peer-sub">Messages · Demo preview</small>
+              <small class="peer-sub">Your messages · Demo</small>
             </div>
           </div>
           <button class="polish-head-btn" @click="polishDraft" title="Polish draft">
@@ -574,7 +479,7 @@ onBeforeUnmount(() => {
             maxlength="160"
             class="composer-input"
             aria-label="Try typing in Monolog demo"
-            placeholder="Type a message..."
+            placeholder="Try typing a thought..."
           />
           <button class="composer-clear" @click="activeInputText = ''" title="Clear">×</button>
           <button class="composer-send" @click="sendChat" title="Send">↑</button>
@@ -585,7 +490,7 @@ onBeforeUnmount(() => {
       <div v-else class="host-bank-area">
         <div class="bank-head">
           <Lock :size="13" />
-          <strong>Pine Bank · Sign in securely</strong>
+          <strong>pine-bank.example · Protected field</strong>
         </div>
         <div class="bank-card">
           <div class="bank-field">
@@ -593,7 +498,7 @@ onBeforeUnmount(() => {
             <div class="bank-val font-mono">•••• 4821</div>
           </div>
           <div class="bank-field is-focused">
-            <label>Password (Protected field)</label>
+            <label>Password sign-in</label>
             <div class="bank-val font-mono">
               <span>••••••••••••</span>
               <EyeOff :size="12" />
@@ -601,7 +506,7 @@ onBeforeUnmount(() => {
           </div>
           <div class="bank-auto-note">
             <Shield :size="11" />
-            <span>Memory paused for this field · Automatic</span>
+            <span>Memory pauses automatically</span>
           </div>
         </div>
       </div>
@@ -630,7 +535,7 @@ onBeforeUnmount(() => {
               Personal
             </button>
             <button class="mini-pill" :class="{ on: aiWeb }" @click="aiWeb = !aiWeb">
-              {{ aiWeb ? 'Web on (Wikipedia)' : 'Web off' }}
+              {{ aiWeb ? 'Web on' : 'Web off' }}
             </button>
             <button
               v-for="s in aiSamples"
@@ -652,7 +557,7 @@ onBeforeUnmount(() => {
         </div>
       </Transition>
 
-      <!-- Floating Panel: Vox Voice Mode -->
+      <!-- Floating Panel: VOX Voice Mode -->
       <Transition name="pop">
         <div v-if="activePanel === 'vox'" class="floating-drawer vox-drawer">
           <div class="drawer-head">
@@ -671,7 +576,7 @@ onBeforeUnmount(() => {
           </div>
 
           <p class="vox-live-text">“{{ smartFilter ? voxClean : voxRaw }}”</p>
-          <span class="vox-subnote">Smart Filter {{ smartFilter ? 'on (strips “uh”)' : 'off (raw)' }} · Pause-tolerant</span>
+          <span class="vox-subnote">Smart Filter {{ smartFilter ? 'on · Punctuation and formatting, handled.' : 'off · Raw speech' }}</span>
 
           <div class="vox-actions-row">
             <button
@@ -691,13 +596,13 @@ onBeforeUnmount(() => {
         </div>
       </Transition>
 
-      <!-- Floating Panel: Quick Shortcuts (Hold / Tap m) -->
+      <!-- Floating Panel: Quick Shortcuts (Tap / Hold m) -->
       <Transition name="pop">
         <div v-if="activePanel === 'shortcuts'" class="floating-drawer shortcuts-drawer">
           <div class="drawer-head">
             <div class="drawer-title">
               <strong>Quick shortcuts</strong>
-              <span class="mode-tag">From m key</span>
+              <span class="mode-tag">m key</span>
             </div>
             <button class="drawer-close" @click="activePanel = 'none'">
               <X :size="13" />
@@ -728,7 +633,7 @@ onBeforeUnmount(() => {
       <Transition name="pop">
         <div v-if="activePanel === 'note'" class="floating-drawer">
           <div class="drawer-head">
-            <div class="drawer-title"><strong>Save note to Context Library</strong></div>
+            <div class="drawer-title"><strong>Save note locally</strong></div>
             <button class="drawer-close" @click="activePanel = 'none'">
               <X :size="13" />
             </button>
@@ -741,7 +646,7 @@ onBeforeUnmount(() => {
             placeholder="What would you like to keep?"
           ></textarea>
           <div class="ai-answer-foot">
-            <small>Encrypted locally in Room</small>
+            <small>Saved privately, on this device</small>
             <button class="insert-ans-btn" @click="saveQuickNote">Save note</button>
           </div>
         </div>
@@ -765,7 +670,7 @@ onBeforeUnmount(() => {
               <path d="M10 16h4" />
             </svg>
             <span>
-              {{ privacyMode === 'protected' ? 'Incognito is on · Memory paused for this field' : 'Incognito · Nothing saved' }}
+              {{ privacyMode === 'protected' ? 'Memory paused for this field' : 'Incognito · Nothing saved' }}
             </span>
           </div>
           <span class="inc-badge font-mono">
@@ -777,7 +682,7 @@ onBeforeUnmount(() => {
         <div class="kb-toolbar">
           <button
             class="kb-tool-icon"
-            title="Toggle tools / dismiss"
+            title="Dismiss drawer"
             @click="activePanel = 'none'"
           >
             <ChevronDown :size="15" />
@@ -798,7 +703,7 @@ onBeforeUnmount(() => {
             :class="{ active: activePanel === 'vox' }"
             :disabled="isPrivate"
             @click="activePanel = activePanel === 'vox' ? 'none' : 'vox'"
-            title="Tap or hold for Vox voice typing"
+            title="VOX voice typing"
           >
             <Mic :size="15" />
           </button>
@@ -807,14 +712,14 @@ onBeforeUnmount(() => {
             class="kb-m-key"
             :class="{ locked: isPrivate, open: activePanel === 'shortcuts' }"
             @click="toggleShortcuts"
-            title="Tap or hold m for Quick Shortcuts"
+            title="Tap for Quick shortcuts"
           >
             <img src="/monolog/images/monolog-icon.png" alt="m key" />
             <span v-if="isPrivate" class="m-lock"><Lock :size="8" /></span>
           </button>
         </div>
 
-        <!-- Key Grid (supports Full / Left / Right & Key Borders) -->
+        <!-- Key Grid -->
         <div class="kb-keys-wrap">
           <div class="kb-row">
             <button
@@ -879,7 +784,7 @@ onBeforeUnmount(() => {
               class="kb-spacebar"
               :class="{ 'ai-open': activePanel === 'ai' }"
               @click="isPrivate ? activeInputText += ' ' : (activePanel = activePanel === 'ai' ? 'none' : 'ai')"
-              title="Tap for AI Ask or insert space"
+              title="Tap for AI Ask"
             >
               <span>{{ activePanel === 'ai' ? 'AI Ask' : 'English' }}</span>
               <Zap v-if="!isPrivate" :size="11" class="space-bolt" />
@@ -888,7 +793,7 @@ onBeforeUnmount(() => {
               class="kb-key mod-pill incognito-dot-key"
               :class="{ glow: isPrivate }"
               @click="setPrivacy(privacyMode === 'manual' ? 'off' : 'manual')"
-              title="Tap or hold period to toggle Incognito"
+              title="Toggle Incognito"
             >
               <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M2 10h20" />
@@ -902,35 +807,6 @@ onBeforeUnmount(() => {
             <button class="kb-enter" @click="sendChat" aria-label="Enter / Send">↵</button>
           </div>
         </div>
-
-          <div class="home-pill-bar"><span></span></div>
-        </div>
-        </div>
-
-        <!-- Rear Metal Chassis Face -->
-        <div
-          class="phone-face-rear"
-          :class="[`rear-${theme}`, { 'is-inert': phoneSide === 'front' }]"
-          :data-theme="theme"
-        >
-          <div class="rear-camera-bar">
-            <span class="rear-lens"></span>
-            <span class="rear-lens"></span>
-            <span class="rear-flash"></span>
-          </div>
-
-          <button
-            class="rear-logo-btn"
-            type="button"
-            :aria-label="theme === 'ink' ? 'Switch phone to Paper' : 'Switch phone to Ink'"
-            @click="onRearLogoClick"
-          >
-            <img src="/monolog/monolog-logo.svg" alt="Monolog Emblem" class="rear-emblem" />
-            <span class="rear-emblem-caption font-mono">Tap m to switch Paper / Ink</span>
-          </button>
-
-          <span class="rear-brand-foot font-mono">MONOLOG · NOTOKENS</span>
-        </div>
       </div>
     </div>
   </div>
@@ -939,10 +815,10 @@ onBeforeUnmount(() => {
 <style scoped>
 .playground-wrapper {
   width: 100%;
-  max-width: 440px;
+  max-width: 430px;
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 0.75rem;
   align-items: center;
 }
 
@@ -955,13 +831,13 @@ onBeforeUnmount(() => {
   backdrop-filter: blur(16px);
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
+  gap: 0.5rem;
 }
 
 .pg-control-row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   flex-wrap: wrap;
 }
 
@@ -993,12 +869,12 @@ onBeforeUnmount(() => {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  padding: 0.22rem 0.5rem;
+  padding: 0.2rem 0.48rem;
   border-radius: 9999px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.04);
   color: #cbd5e1;
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 600;
   cursor: pointer;
 }
@@ -1010,8 +886,8 @@ onBeforeUnmount(() => {
 }
 
 .swatch-dot {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.35);
 }
@@ -1019,13 +895,13 @@ onBeforeUnmount(() => {
 .pg-chip-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.28rem;
-  padding: 0.2rem 0.52rem;
+  gap: 0.25rem;
+  padding: 0.2rem 0.5rem;
   border-radius: 9999px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.04);
   color: #cbd5e1;
-  font-size: 0.66rem;
+  font-size: 0.64rem;
   font-weight: 600;
   cursor: pointer;
 }
@@ -1042,6 +918,12 @@ onBeforeUnmount(() => {
   color: #08090b;
 }
 
+.pg-chip-btn.play-btn.active {
+  background: #f97316;
+  border-color: #f97316;
+  color: #ffffff;
+}
+
 .layout-seg {
   display: inline-flex;
   background: rgba(255, 255, 255, 0.06);
@@ -1053,7 +935,7 @@ onBeforeUnmount(() => {
   border: none;
   background: transparent;
   color: #94a3b8;
-  font-size: 0.64rem;
+  font-size: 0.62rem;
   font-weight: 600;
   text-transform: capitalize;
   padding: 0.15rem 0.42rem;
@@ -1066,10 +948,8 @@ onBeforeUnmount(() => {
   color: #ffedd5;
 }
 
-/* ==========================================================================
-   PHONE CHASSIS & 6-THEME TOKEN SYSTEM
-   ========================================================================== */
-.phone-chassis {
+/* Flat Interactive Widget Card + 6-Theme Tokens */
+.keyboard-widget-card {
   --screen-bg: #ffffff;
   --screen-ink: #151823;
   --screen-muted: #535b6b;
@@ -1082,21 +962,19 @@ onBeforeUnmount(() => {
   --kb-pill: rgba(21, 24, 35, 0.06);
 
   width: 100%;
-  max-width: 400px;
-  border-radius: 40px;
-  border: 2px solid rgba(255, 255, 255, 0.18);
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
   background: var(--screen-bg);
   color: var(--screen-ink);
-  padding: 0.9rem 0.9rem 0.65rem;
-  box-shadow: 0 28px 75px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  padding: 0.85rem 0.85rem 0.7rem;
+  box-shadow: 0 24px 65px rgba(0, 0, 0, 0.72), inset 0 1px 0 rgba(255, 255, 255, 0.35);
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
-  position: relative;
+  gap: 0.6rem;
   overflow: hidden;
 }
 
-.phone-chassis[data-theme='ink'] {
+.keyboard-widget-card[data-theme='ink'] {
   --screen-bg: #08090b;
   --screen-ink: #f7f8fc;
   --screen-muted: #b9bfcc;
@@ -1109,7 +987,7 @@ onBeforeUnmount(() => {
   --kb-pill: rgba(255, 255, 255, 0.12);
 }
 
-.phone-chassis[data-theme='iris'] {
+.keyboard-widget-card[data-theme='iris'] {
   --screen-bg: #f6f7fe;
   --screen-ink: #161b2e;
   --screen-muted: #4e5674;
@@ -1122,7 +1000,7 @@ onBeforeUnmount(() => {
   --kb-pill: rgba(64, 79, 145, 0.1);
 }
 
-.phone-chassis[data-theme='ocean'] {
+.keyboard-widget-card[data-theme='ocean'] {
   --screen-bg: #eff8f7;
   --screen-ink: #102b33;
   --screen-muted: #3d646e;
@@ -1135,7 +1013,7 @@ onBeforeUnmount(() => {
   --kb-pill: rgba(24, 95, 115, 0.1);
 }
 
-.phone-chassis[data-theme='terracotta'] {
+.keyboard-widget-card[data-theme='terracotta'] {
   --screen-bg: #fdf5ef;
   --screen-ink: #2f1b17;
   --screen-muted: #6d4d46;
@@ -1148,7 +1026,7 @@ onBeforeUnmount(() => {
   --kb-pill: rgba(134, 62, 53, 0.1);
 }
 
-.phone-chassis[data-theme='photo'] {
+.keyboard-widget-card[data-theme='photo'] {
   --screen-bg: #121520;
   --screen-ink: #f7f8fc;
   --screen-muted: #cbd2e6;
@@ -1161,59 +1039,26 @@ onBeforeUnmount(() => {
   --kb-pill: rgba(255, 255, 255, 0.14);
 }
 
-.phone-status-bar {
+.widget-top-strip {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 0.4rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-}
-
-.camera-punch-hole {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #111;
-  border: 1.5px solid rgba(128, 128, 128, 0.4);
-}
-
-.status-right {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
+  font-size: 0.62rem;
+  color: var(--screen-muted);
+  border-bottom: 1px solid var(--kb-key-border);
+  padding-bottom: 0.4rem;
 }
 
 .theme-status-tag {
-  font-size: 0.62rem;
-  color: var(--screen-muted);
+  text-transform: uppercase;
+  font-weight: 700;
 }
 
-.net-tag {
-  font-size: 0.66rem;
-}
-
-.battery-pill {
-  width: 16px;
-  height: 9px;
-  border: 1px solid currentColor;
-  border-radius: 2px;
-  padding: 1px;
-}
-
-.battery-fill {
-  width: 100%;
-  height: 100%;
-  background: currentColor;
-  border-radius: 1px;
-}
-
-/* Host App Screens */
 .host-chat-area,
 .host-bank-area {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.45rem;
 }
 
 .host-chat-head {
@@ -1243,12 +1088,12 @@ onBeforeUnmount(() => {
 
 .peer-name {
   display: block;
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   line-height: 1.1;
 }
 
 .peer-sub {
-  font-size: 0.66rem;
+  font-size: 0.64rem;
   color: var(--screen-muted);
 }
 
@@ -1269,15 +1114,14 @@ onBeforeUnmount(() => {
 .chat-stream {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  padding: 0.25rem 0;
+  gap: 0.36rem;
 }
 
 .chat-msg {
   max-width: 82%;
-  padding: 0.45rem 0.75rem;
+  padding: 0.42rem 0.72rem;
   border-radius: 14px;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   line-height: 1.35;
 }
 
@@ -1285,14 +1129,12 @@ onBeforeUnmount(() => {
   align-self: flex-start;
   background: var(--bubble-recv);
   color: var(--screen-ink);
-  border-bottom-left-radius: 4px;
 }
 
 .chat-msg.sent {
   align-self: flex-end;
   background: var(--bubble-sent);
   color: var(--bubble-sent-ink);
-  border-bottom-right-radius: 4px;
 }
 
 .host-composer {
@@ -1301,7 +1143,7 @@ onBeforeUnmount(() => {
   gap: 0.35rem;
   background: var(--bubble-recv);
   border-radius: 9999px;
-  padding: 0.28rem 0.32rem 0.28rem 0.75rem;
+  padding: 0.26rem 0.3rem 0.26rem 0.72rem;
 }
 
 .composer-input {
@@ -1334,36 +1176,36 @@ onBeforeUnmount(() => {
   cursor: pointer;
 }
 
-/* Pine Bank Protected Field */
+/* Protected Input Screen */
 .bank-head {
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  font-size: 0.84rem;
+  font-size: 0.82rem;
 }
 
 .bank-card {
   background: var(--bubble-recv);
-  border-radius: 16px;
-  padding: 0.7rem 0.8rem;
+  border-radius: 14px;
+  padding: 0.65rem 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.4rem;
 }
 
 .bank-field label {
   display: block;
-  font-size: 0.64rem;
+  font-size: 0.62rem;
   color: var(--screen-muted);
-  margin-bottom: 0.15rem;
+  margin-bottom: 0.12rem;
 }
 
 .bank-val {
   background: var(--screen-bg);
   border: 1px solid var(--kb-key-border);
   border-radius: 8px;
-  padding: 0.35rem 0.55rem;
-  font-size: 0.76rem;
+  padding: 0.32rem 0.52rem;
+  font-size: 0.74rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1377,21 +1219,21 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 600;
-  color: #7c3aed;
+  color: #a855f7;
 }
 
-/* Floating Drawers (AI Ask / Vox / Quick Shortcuts) */
+/* Drawers */
 .floating-drawer {
   background: var(--screen-bg);
   border: 1px solid var(--kb-key-border);
-  border-radius: 18px;
-  padding: 0.65rem 0.75rem;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  border-radius: 16px;
+  padding: 0.6rem 0.72rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.42rem;
 }
 
 .drawer-head {
@@ -1436,7 +1278,7 @@ onBeforeUnmount(() => {
   gap: 0.4rem;
   background: var(--bubble-recv);
   border-radius: 10px;
-  padding: 0.32rem 0.55rem;
+  padding: 0.3rem 0.55rem;
 }
 
 .ai-q-input {
@@ -1508,7 +1350,6 @@ onBeforeUnmount(() => {
   cursor: pointer;
 }
 
-/* Vox Drawer */
 .vox-wave-row {
   display: flex;
   align-items: center;
@@ -1558,7 +1399,6 @@ onBeforeUnmount(() => {
   flex-wrap: wrap;
 }
 
-/* Quick Shortcuts Grid */
 .shortcuts-grid-4 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1575,7 +1415,7 @@ onBeforeUnmount(() => {
   flex-direction: column;
   align-items: center;
   gap: 0.28rem;
-  font-size: 0.66rem;
+  font-size: 0.64rem;
   font-weight: 600;
   cursor: pointer;
 }
@@ -1601,7 +1441,7 @@ onBeforeUnmount(() => {
   color: #f8fafc;
   font-family: var(--font-mono);
   font-size: 0.68rem;
-  padding: 0.38rem 0.65rem;
+  padding: 0.36rem 0.65rem;
   border-radius: 10px;
   text-align: center;
 }
@@ -1609,11 +1449,11 @@ onBeforeUnmount(() => {
 /* Keyboard Surface */
 .keyboard-surface {
   background: var(--kb-bg);
-  border-radius: 26px;
-  padding: 0.5rem 0.35rem 0.25rem;
+  border-radius: 20px;
+  padding: 0.5rem 0.35rem 0.42rem;
   display: flex;
   flex-direction: column;
-  gap: 0.42rem;
+  gap: 0.4rem;
 }
 
 .incognito-strip {
@@ -1623,8 +1463,8 @@ onBeforeUnmount(() => {
   background: rgba(24, 24, 34, 0.92);
   color: #f8fafc;
   border-radius: 12px;
-  padding: 0.35rem 0.65rem;
-  font-size: 0.7rem;
+  padding: 0.34rem 0.65rem;
+  font-size: 0.68rem;
   font-weight: 600;
 }
 
@@ -1729,7 +1569,6 @@ onBeforeUnmount(() => {
   justify-content: center;
 }
 
-/* One-handed layouts */
 .kb-keys-wrap {
   display: flex;
   flex-direction: column;
@@ -1738,12 +1577,12 @@ onBeforeUnmount(() => {
   transition: width 0.25s ease;
 }
 
-.phone-chassis[data-layout='left'] .kb-keys-wrap {
+.keyboard-widget-card[data-layout='left'] .kb-keys-wrap {
   width: 86%;
   margin-right: auto;
 }
 
-.phone-chassis[data-layout='right'] .kb-keys-wrap {
+.keyboard-widget-card[data-layout='right'] .kb-keys-wrap {
   width: 86%;
   margin-left: auto;
 }
@@ -1761,7 +1600,7 @@ onBeforeUnmount(() => {
 .kb-key {
   position: relative;
   flex: 1;
-  height: 38px;
+  height: 37px;
   border: 1px solid transparent;
   background: transparent;
   color: var(--screen-ink);
@@ -1778,8 +1617,8 @@ onBeforeUnmount(() => {
   background: var(--kb-pill);
 }
 
-.phone-chassis[data-borders='true'] .kb-key,
-.phone-chassis[data-borders='true'] .kb-spacebar {
+.keyboard-widget-card[data-borders='true'] .kb-key,
+.keyboard-widget-card[data-borders='true'] .kb-spacebar {
   background: var(--kb-key-bg);
   border-color: var(--kb-key-border);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
@@ -1818,7 +1657,7 @@ onBeforeUnmount(() => {
 
 .kb-spacebar {
   flex: 2.8;
-  height: 36px;
+  height: 35px;
   border: 1px solid transparent;
   background: var(--kb-pill);
   color: var(--screen-ink);
@@ -1856,7 +1695,7 @@ onBeforeUnmount(() => {
 
 .kb-enter {
   width: 44px;
-  height: 36px;
+  height: 35px;
   border: none;
   border-radius: 9999px;
   background: var(--bubble-sent);
@@ -1864,196 +1703,5 @@ onBeforeUnmount(() => {
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-}
-
-.home-pill-bar {
-  display: flex;
-  justify-content: center;
-  padding-top: 0.2rem;
-}
-
-.home-pill-bar span {
-  width: 96px;
-  height: 3.5px;
-  border-radius: 9999px;
-  background: var(--screen-muted);
-  opacity: 0.4;
-}
-
-/* 3D Toolbar & Perspective Stage */
-.pg-3d-toolbar {
-  width: 100%;
-  max-width: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.pg-hint-text {
-  font-size: 0.64rem;
-  color: #9ca3af;
-}
-
-.pg-3d-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.pg-3d-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.24rem 0.62rem;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.06);
-  color: #e2e8f0;
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.pg-3d-btn:hover,
-.pg-3d-btn.running {
-  border-color: var(--color-accent);
-  background: rgba(249, 115, 22, 0.2);
-  color: #ffffff;
-}
-
-.phone-3d-stage {
-  width: 100%;
-  max-width: 400px;
-  perspective: 1300px;
-  cursor: grab;
-  user-select: none;
-}
-
-.phone-3d-stage.dragging {
-  cursor: grabbing;
-}
-
-.phone-3d-body {
-  position: relative;
-  width: 100%;
-  transform-style: preserve-3d;
-  transition: transform 0.55s cubic-bezier(0.22, 0.72, 0.24, 1);
-}
-
-.phone-3d-stage.dragging .phone-3d-body {
-  transition: none;
-}
-
-.phone-face-front {
-  position: relative;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-.phone-face-front.is-inert,
-.phone-face-rear.is-inert {
-  pointer-events: none;
-}
-
-.phone-face-rear {
-  position: absolute;
-  inset: 0;
-  border-radius: 40px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transform: rotateY(180deg);
-  background: linear-gradient(150deg, #faf9fc, #e6e2ee);
-  color: #3f3b4a;
-  box-shadow: 0 28px 75px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.65);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.5rem 1.35rem;
-}
-
-.phone-face-rear[data-theme='ink'],
-.phone-face-rear[data-theme='photo'] {
-  background: linear-gradient(150deg, #2b2934, #14131a 60%, #1c1b24);
-  color: #cbd5e1;
-  box-shadow: 0 28px 75px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.16);
-}
-
-.phone-face-rear[data-theme='iris'] {
-  background: linear-gradient(150deg, #f3f5ff, #cfd6f4);
-}
-
-.phone-face-rear[data-theme='ocean'] {
-  background: linear-gradient(150deg, #effbfa, #b9dce0);
-}
-
-.phone-face-rear[data-theme='terracotta'] {
-  background: linear-gradient(150deg, #fff6ee, #e8c7be);
-}
-
-.rear-camera-bar {
-  align-self: flex-start;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 9px;
-  border-radius: 999px;
-  border: 1px solid rgba(128, 128, 128, 0.35);
-  background: rgba(15, 16, 22, 0.28);
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2);
-}
-
-.rear-lens {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2px solid rgba(180, 180, 200, 0.45);
-  background: radial-gradient(circle at 42% 38%, #64748b 0%, #1e293b 25%, #090a0f 65%);
-}
-
-.rear-flash {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #fef3c7, #d97706);
-}
-
-.rear-logo-btn {
-  border: none;
-  background: transparent;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.65rem;
-  cursor: pointer;
-  color: inherit;
-  padding: 1rem;
-  border-radius: 20px;
-}
-
-.rear-logo-btn:hover {
-  background: rgba(128, 128, 128, 0.12);
-}
-
-.rear-emblem {
-  width: 58px;
-  height: 58px;
-  opacity: 0.88;
-}
-
-.rear-emblem-caption {
-  font-size: 0.64rem;
-  opacity: 0.72;
-}
-
-.rear-brand-foot {
-  font-size: 0.62rem;
-  letter-spacing: 0.14em;
-  opacity: 0.52;
 }
 </style>

@@ -82,27 +82,27 @@ const startVoxDemo = () => {
 const aiTheme = ref<KeyboardThemeId>('paper')
 const aiPersonal = ref(true)
 const aiWeb = ref(false)
-const aiSelectedSample = ref<'library' | 'checkin' | 'hotel'>('library')
+const aiSelectedSample = ref<'hike' | 'library' | 'coffee'>('hike')
 const aiInsertedNotice = ref<string | null>(null)
 
 const aiSampleMap = {
+  hike: {
+    label: 'Hike essentials?',
+    query: 'What should we bring for the hike?',
+    answer: 'Water, a light layer, a charged phone, a small first-aid kit. And snacks.',
+    source: 'Sample answer · Product preview',
+  },
   library: {
     label: 'Study room?',
-    query: 'When does the Riverside study room close?',
+    query: 'When does the study room close?',
     answer: 'The study room closes at 8:00 PM. Last entry is at 7:30 PM.',
-    source: 'Sample source · Riverside Library hours',
+    source: 'Riverside Library hours',
   },
-  checkin: {
-    label: 'Judging bay?',
-    query: 'Where did finalist judging move to?',
-    answer: 'Finalist judging moved to Demo Bay B in Hall 2 at 4:00 PM.',
-    source: 'Context Library · Finals Portal OCR',
-  },
-  hotel: {
-    label: 'Hotel check-in?',
-    query: 'Hotel Namba check-in time?',
-    answer: 'Check-in at Hotel Namba opens at 3:00 PM.',
-    source: 'Context Library · Screenshot OCR',
+  coffee: {
+    label: 'Coffee with Sam?',
+    query: 'Coffee with Sam',
+    answer: 'Coffee with Sam is in the sample journal entry for 15 November.',
+    source: 'Sample journal · 15 November',
   },
 }
 
@@ -178,8 +178,7 @@ const tapKbKey = (ch: string) => {
           :data-borders="String(dualBorders)"
         >
           <div class="mp-status">
-            <span>9:41</span>
-            <span class="mp-punch"></span>
+            <span>Monolog Keyboard</span>
             <span>{{ themeVariant === 'paper' ? 'Paper' : 'Ink AMOLED' }}</span>
           </div>
 
@@ -240,9 +239,8 @@ const tapKbKey = (ch: string) => {
 
       <div class="mini-phone focused-phone" :data-theme="voxTheme" data-borders="false">
         <div class="mp-status">
-          <span>9:41</span>
-          <span class="mp-punch"></span>
-          <span>5G · Vox</span>
+          <span>VOX Voice</span>
+          <span>{{ voxTheme }}</span>
         </div>
 
         <div class="mp-chat-head">
@@ -311,9 +309,8 @@ const tapKbKey = (ch: string) => {
 
       <div class="mini-phone focused-phone" :data-theme="aiTheme" data-borders="false">
         <div class="mp-status">
-          <span>9:41</span>
-          <span class="mp-punch"></span>
-          <span>5G · AI Ask</span>
+          <span>AI Ask</span>
+          <span>{{ aiTheme === 'ink' ? 'Ink AMOLED' : 'Paper' }}</span>
         </div>
 
         <div class="mp-chat-head">
@@ -409,8 +406,7 @@ const tapKbKey = (ch: string) => {
         :data-layout="kbLayout"
       >
         <div class="mp-status">
-          <span>9:41</span>
-          <span class="mp-punch"></span>
+          <span>Theme</span>
           <span>{{ selectedTheme }}</span>
         </div>
 
@@ -490,8 +486,7 @@ const tapKbKey = (ch: string) => {
 
       <div class="mini-phone focused-phone" data-theme="ink" data-borders="false">
         <div class="mp-status">
-          <span>9:41</span>
-          <span class="mp-punch"></span>
+          <span>Privacy State</span>
           <span>{{ privacyStateView === 'protected' ? 'Pine Bank' : privacyStateView === 'manual' ? 'Incognito' : 'Memory Off' }}</span>
         </div>
 
@@ -589,8 +584,7 @@ const tapKbKey = (ch: string) => {
           data-borders="false"
         >
           <div class="mp-status">
-            <span>9:41</span>
-            <span class="mp-punch"></span>
+            <span>Quick Shortcuts</span>
             <span>Hold m key</span>
           </div>
 
@@ -670,9 +664,8 @@ const tapKbKey = (ch: string) => {
           data-borders="false"
         >
           <div class="mp-status">
-            <span>9:41</span>
-            <span class="mp-punch"></span>
-            <span>Inline Reminder</span>
+            <span>Inline Suggestion</span>
+            <span>Contextual Reminder</span>
           </div>
 
           <div class="mp-chat-head">
@@ -731,8 +724,8 @@ const tapKbKey = (ch: string) => {
           <h4>Your day, remembered.</h4>
           <div class="fp-card accent">
             <small>TODAY'S JOURNAL</small>
-            <strong>Buildathon finals</strong>
-            <p>3:30 PM pitch rehearsal, Demo Bay B capture &amp; pitch notes.</p>
+            <strong>A focused day</strong>
+            <p>Study plans in the library, coffee with Sam, and Call Amma at 6:00 PM.</p>
           </div>
           <div class="fp-mini-grid">
             <div class="fp-card">
@@ -761,14 +754,14 @@ const tapKbKey = (ch: string) => {
           </div>
           <h4>Journal</h4>
           <div class="fp-card">
-            <small>26 NOV · TODAY</small>
-            <strong>Buildathon finals</strong>
-            <p>Judging moved to Demo Bay B · 4:00 PM Hall 2.</p>
+            <small>SUNDAY, 15 NOV</small>
+            <strong>A focused day</strong>
+            <p>Study plans, coffee with Sam, and Call Amma at 6:00 PM.</p>
           </div>
           <div class="fp-card">
-            <small>15 NOV · SAT</small>
-            <strong>A focused day</strong>
-            <p>Study plans in the library &amp; coffee with Sam.</p>
+            <small>14 NOV · SAT</small>
+            <strong>Small moments, kept</strong>
+            <p>Riverside art walk &amp; voice note on the way home.</p>
           </div>
           <div class="fp-nav">
             <span>Today</span>
@@ -786,11 +779,11 @@ const tapKbKey = (ch: string) => {
           <h4>Context Library</h4>
           <div class="fp-card accent">
             <small><Layers :size="10" /> SCREENSHOT OCR</small>
-            <strong>Judging moved to Demo Bay B</strong>
-            <p>HND → Finals Portal · Bring HDMI adapter.</p>
+            <strong>Weekend getaway</strong>
+            <p>HND → ITM · 24 May · Hotel Namba check-in 3:00 PM.</p>
           </div>
           <div class="fp-card">
-            <small><FileText :size="10" /> VOICE NOTE · 0:05</small>
+            <small><FileText :size="10" /> AUDIO NOTE · 0:05</small>
             <strong>On the way home</strong>
             <audio controls preload="none" src="/monolog/audio/context-voice-demo.wav" class="fp-audio"></audio>
           </div>
@@ -805,15 +798,15 @@ const tapKbKey = (ch: string) => {
         <div v-if="!compact" class="flow-phone" data-theme="ink">
           <div class="fp-top">
             <span class="fp-num font-mono">04 · NNN RECAP</span>
-            <span class="fp-pill-mini dark">Editable</span>
+            <span class="fp-pill-mini dark">Review first</span>
           </div>
           <h4>Narrative Nostalgia November</h4>
           <div class="fp-card dark-accent">
-            <p>“Nights of revision. Coffee with Sam. An art walk you almost skipped.”</p>
+            <p>“Nights of revision. Coffee with Sam. An art walk you almost skipped. November held more than deadlines.”</p>
           </div>
           <div class="fp-chips-wrap">
             <button
-              v-for="item in ['Rehearsal 3:30 PM', 'Demo Bay B', 'Coffee with Sam', 'Art walk']"
+              v-for="item in ['Morning reflection', 'Coffee with Sam', 'Art walk', 'Call Amma 6 PM']"
               :key="item"
               class="fp-toggle-chip"
               :class="{ on: activeRecapHighlights.includes(item) }"
@@ -822,7 +815,7 @@ const tapKbKey = (ch: string) => {
               {{ activeRecapHighlights.includes(item) ? '✓ ' : '+ ' }}{{ item }}
             </button>
           </div>
-          <small class="fp-foot-hint">{{ activeRecapHighlights.length }} selected · Reviewed before export</small>
+          <small class="fp-foot-hint">{{ activeRecapHighlights.length }} selected · Edit before export</small>
         </div>
       </div>
     </div>
@@ -910,10 +903,10 @@ const tapKbKey = (ch: string) => {
   width: 100%;
   background: var(--mp-bg);
   color: var(--mp-ink);
-  border-radius: 32px;
-  border: 2.5px solid rgba(255, 255, 255, 0.2);
-  padding: 0.75rem 0.7rem 0.6rem;
-  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.75);
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 0.75rem 0.75rem 0.65rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -980,16 +973,11 @@ const tapKbKey = (ch: string) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.64rem;
+  font-size: 0.62rem;
   font-weight: 700;
-  padding: 0 0.3rem;
-}
-
-.mp-punch {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #111827;
+  color: var(--mp-muted);
+  border-bottom: 1px solid var(--mp-key-border);
+  padding: 0 0.2rem 0.32rem;
 }
 
 .mp-chat-head {

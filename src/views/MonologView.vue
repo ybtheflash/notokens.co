@@ -4,21 +4,13 @@ import {
   Shield,
   ArrowLeft,
   FileText,
-  Search,
   Eye,
-  Mic,
-  BookOpen,
-  Edit3,
-  Sliders,
-  Calendar,
-  Layers,
-  Cloud,
-  Globe,
-  ExternalLink,
-  CheckCircle2,
   Play,
   ChevronDown,
   Mail,
+  Globe,
+  ExternalLink,
+  CheckCircle2,
 } from 'lucide-vue-next'
 import MonologPhonePlayground from '@/components/monolog/MonologPhonePlayground.vue'
 import MonologJournalExplorer from '@/components/monolog/MonologJournalExplorer.vue'
@@ -30,6 +22,9 @@ import {
   FIVE_PILLARS,
   THREE_NEEDS,
   PRIVACY_STATES,
+  JOURNAL_BENEFITS,
+  SITE_FEATURES_GRID,
+  PRICING_DATA,
   VERIFIED_CHECKS,
   TECH_STACK,
   FAQ_ITEMS,
@@ -58,8 +53,8 @@ const inspectProtectedBanking = () => {
   el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
-// Pricing billing state
-const billingCycle = ref<'yearly' | 'monthly'>('yearly')
+// Pricing billing state (Monthly ₹299 is default on monolog.notokens.co)
+const billingCycle = ref<'monthly' | 'yearly'>('monthly')
 const billingNoteText = ref<string | null>(null)
 
 const handleRestoreToast = () => {
@@ -154,7 +149,7 @@ const closeModal = () => {
       <section class="hero-section">
         <div class="hero-grid">
           <div class="hero-left">
-            <div class="hero-eyebrow font-mono">// GOOGLE STARTUP BUILDATHON INDIA 2026 FINALIST</div>
+            <div class="hero-eyebrow font-mono">// A LITTLE MORE POSSIBILITY. IN EVERY KEY. · MADE FOR ANDROID</div>
 
             <div class="hero-title-wrap">
               <img src="/monolog/monolog-logo.svg" alt="Monolog Official Logo" class="hero-logo-badge" />
@@ -164,17 +159,16 @@ const closeModal = () => {
             <h2 class="hero-sub-headline">A keyboard. With a memory.</h2>
 
             <p class="hero-tagline">
-              <strong>Type. Speak. Act. Remember your side of the day.</strong>
-              <span class="tagline-brand"> monolog</span> is an Android-first AI keyboard and companion journal combining borderless typing across 6 themes, natural Vox dictation, floating AI Ask search, quick actions, and private encrypted local memory.
+              <strong>Your words do more here.</strong> Type naturally, speak freely, get things done — and keep <span class="tagline-brand">your side of the day.</span> Android-first. Private by choice. Yours by design.
             </p>
 
             <!-- Chips -->
             <div class="hero-chips">
-              <span class="chip">Android 12+ · Kotlin IME</span>
-              <span class="chip">6 Themes</span>
-              <span class="chip">Gemma 3 270M IT / LiteRT-LM</span>
-              <span class="chip">Gemini 1.5 Flash (Opt-In)</span>
-              <span class="chip">Keystore AES-256</span>
+              <span class="chip">Type · Speak · Act · Remember</span>
+              <span class="chip">Paper · Ink · Iris · Ocean · Terracotta · Photo</span>
+              <span class="chip">VOX Voice</span>
+              <span class="chip">AI Ask</span>
+              <span class="chip">Local Encrypted Journal</span>
             </div>
 
             <!-- Showcase Referral & Action Links -->
@@ -354,6 +348,29 @@ const closeModal = () => {
         <!-- Interactive Today / Journal / Context Library Simulator -->
         <div class="explorer-container frosted-glass-panel">
           <MonologJournalExplorer />
+        </div>
+
+        <!-- A boost to your everyday life (From monolog.notokens.co) -->
+        <div class="benefits-grid">
+          <article v-for="b in JOURNAL_BENEFITS" :key="b.title" class="benefit-card frosted-glass-panel">
+            <span class="benefit-tag font-mono">{{ b.tag }}</span>
+            <h4>{{ b.title }}</h4>
+            <p>{{ b.desc }}</p>
+          </article>
+        </div>
+
+        <!-- A lot in one keyboard (8 Capabilities from monolog.notokens.co) -->
+        <div class="site-cap-panel frosted-glass-panel">
+          <div class="cap-panel-head">
+            <span class="pos-badge-pill font-mono">FROM MONOLOG.NOTOKENS.CO</span>
+            <h3>A lot in one keyboard.</h3>
+          </div>
+          <div class="cap-8-grid">
+            <div v-for="c in SITE_FEATURES_GRID" :key="c.title" class="cap-8-item">
+              <h4>{{ c.title }}</h4>
+              <p>{{ c.desc }}</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -539,11 +556,11 @@ const closeModal = () => {
         </div>
       </section>
 
-      <!-- SECTION: // PLANS, PRICING & FAQ -->
+      <!-- SECTION: // PLANS, PRICING & FAQ (Synced from monolog.notokens.co) -->
       <section class="section-block" id="pricing">
         <div class="section-header-row">
-          <h2 class="section-title">// plans &amp; proposed launch pricing</h2>
-          <span class="section-meta-tag font-mono">Privacy Always Free</span>
+          <h2 class="section-title">// {{ PRICING_DATA.eyebrow.toLowerCase() }}</h2>
+          <span class="section-meta-tag font-mono">Privacy Always Included</span>
         </div>
 
         <div class="pricing-showcase-container">
@@ -553,10 +570,8 @@ const closeModal = () => {
                 <img src="/monolog/monolog-logo.svg" alt="Monolog" class="pricing-logo-icon" />
                 <span class="pricing-badge-text font-mono">MONOLOG PLANS</span>
               </div>
-              <h3 class="pricing-main-title">A little more. On your terms.</h3>
-              <p class="pricing-sub-title">
-                The essentials stay free. Proposed India launch pricing for Monolog Pro — no payment is taken on the showcase website, and exhausting any quota never loses a draft or locks your journal.
-              </p>
+              <h3 class="pricing-main-title">{{ PRICING_DATA.title }}</h3>
+              <p class="pricing-sub-title">{{ PRICING_DATA.subtitle }}</p>
             </div>
 
             <div class="pricing-header-actions">
@@ -574,9 +589,9 @@ const closeModal = () => {
                   :class="{ active: billingCycle === 'yearly' }"
                   @click="billingCycle = 'yearly'"
                 >
-                  <span class="b-save-tag">Save 6%</span>
+                  <span class="b-save-tag">{{ PRICING_DATA.pro.discountTag }}</span>
                   <span>Yearly</span>
-                  <span class="b-pill-rate">₹281/mo</span>
+                  <span class="b-pill-rate">₹3,372/yr</span>
                 </button>
               </div>
               <button class="plan-restore-link" @click="handleRestoreToast">Billing info</button>
@@ -590,41 +605,29 @@ const closeModal = () => {
             <div class="plan-card-wide free-card frosted-glass-panel">
               <div class="p-card-top">
                 <div class="p-tier-badge-row">
-                  <span class="p-tier-name">Monolog Free</span>
-                  <span class="p-tier-tag font-mono">FOREVER</span>
+                  <span class="p-tier-name">{{ PRICING_DATA.free.name }}</span>
+                  <span class="p-tier-tag font-mono">INCLUDED</span>
                 </div>
                 <div class="p-price-block">
-                  <span class="p-price-val">₹0</span>
-                  <span class="p-price-period">to get started</span>
+                  <span class="p-price-val">{{ PRICING_DATA.free.price }}</span>
+                  <span class="p-price-period">{{ PRICING_DATA.free.period }}</span>
                 </div>
-                <p class="p-card-desc">Your everyday keyboard across all 6 themes, private local journal, and full data protections.</p>
+                <p class="p-card-desc">{{ PRICING_DATA.free.desc }}</p>
               </div>
 
               <div class="p-features-block">
-                <span class="p-features-label font-mono">ALWAYS INCLUDED</span>
+                <span class="p-features-label font-mono">INCLUDED</span>
                 <ul class="p-feat-list">
-                  <li>
-                    <span class="feat-icon"><Sliders :size="15" /></span>
-                    <span>Paper, Ink, Iris, Ocean, Terracotta &amp; Photo themes + key borders</span>
-                  </li>
-                  <li>
-                    <span class="feat-icon"><BookOpen :size="15" /></span>
-                    <span>Local journals and basic memory search</span>
-                  </li>
-                  <li>
-                    <span class="feat-icon"><Mic :size="15" /></span>
-                    <span>Basic Vox &amp; on-device writing assistance pool</span>
-                  </li>
-                  <li>
-                    <span class="feat-icon"><Shield :size="15" /></span>
-                    <span>Incognito, Keystore encryption, export &amp; banking shield</span>
+                  <li v-for="feat in PRICING_DATA.free.features" :key="feat">
+                    <span class="feat-icon"><CheckCircle2 :size="14" /></span>
+                    <span>{{ feat }}</span>
                   </li>
                 </ul>
               </div>
 
               <div class="p-card-footer">
                 <a :href="EXTERNAL_LINKS.waitlist" target="_blank" rel="noopener noreferrer" class="plan-ghost-btn">
-                  Join Waitlist for Free Launch ↗
+                  {{ PRICING_DATA.free.cta }} ↵
                 </a>
               </div>
             </div>
@@ -636,74 +639,36 @@ const closeModal = () => {
               <div class="p-card-top">
                 <div class="p-tier-badge-row">
                   <div class="pro-title-inline">
-                    <span class="p-tier-name pro-name">Monolog Pro</span>
-                    <span class="pro-highlight-badge font-mono">PROPOSED LAUNCH</span>
+                    <span class="p-tier-name pro-name">{{ PRICING_DATA.pro.name }}</span>
+                    <span class="pro-highlight-badge font-mono">{{ PRICING_DATA.pro.badge }}</span>
                   </div>
-                  <span v-if="billingCycle === 'yearly'" class="pro-savings-inline font-mono">Save ₹216 / year (~6%)</span>
+                  <span v-if="billingCycle === 'yearly'" class="pro-savings-inline font-mono">Save ₹216 a year (~6%)</span>
                 </div>
 
                 <div class="p-price-block">
                   <div class="p-price-main">
-                    <span class="p-price-val">{{ billingCycle === 'yearly' ? '₹281' : '₹299' }}</span>
-                    <span class="p-price-period">/ month</span>
+                    <span class="p-price-val">
+                      {{ billingCycle === 'yearly' ? PRICING_DATA.pro.yearlyPrice : PRICING_DATA.pro.monthlyPrice }}
+                    </span>
+                    <span class="p-price-period">
+                      {{ billingCycle === 'yearly' ? PRICING_DATA.pro.yearlyPeriod : PRICING_DATA.pro.monthlyPeriod }}
+                    </span>
                   </div>
                   <span class="p-billed-sub">
-                    {{ billingCycle === 'yearly' ? '₹3,372 billed yearly · Cancel anytime' : 'Billed monthly via Google Play when available' }}
+                    {{ billingCycle === 'yearly' ? PRICING_DATA.pro.yearlyNote : PRICING_DATA.pro.monthlyNote }}
                   </span>
                 </div>
-                <p class="p-card-desc">Expanded 10× Vox &amp; AI Ask allowances, saved writing styles, deep memory questions, and richer monthly recaps.</p>
+                <p class="p-card-desc">{{ PRICING_DATA.pro.desc }}</p>
               </div>
 
               <div class="p-features-block">
                 <span class="p-features-label pro-features-label font-mono">EVERYTHING IN FREE, PLUS:</span>
-                <div class="pro-features-2col">
-                  <div class="p-feat-col">
-                    <div class="p-feat-item">
-                      <span class="feat-icon pro-icon"><Mic :size="15" /></span>
-                      <div class="feat-copy">
-                        <strong>10× Vox &amp; AI Ask Pool</strong>
-                        <small>Expanded voice dictation, Smart Filter &amp; custom vocabulary</small>
-                      </div>
-                    </div>
-                    <div class="p-feat-item">
-                      <span class="feat-icon pro-icon"><Edit3 :size="15" /></span>
-                      <div class="feat-copy">
-                        <strong>Saved Styles &amp; Rewrites</strong>
-                        <small>Polish, shorten, tone shifts, and reusable writing rules</small>
-                      </div>
-                    </div>
-                    <div class="p-feat-item">
-                      <span class="feat-icon pro-icon"><Search :size="15" /></span>
-                      <div class="feat-copy">
-                        <strong>AI Ask Memory &amp; Web Search</strong>
-                        <small>Natural-language questions across journals, OCR &amp; citations</small>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="p-feat-col">
-                    <div class="p-feat-item">
-                      <span class="feat-icon pro-icon"><Calendar :size="15" /></span>
-                      <div class="feat-copy">
-                        <strong>Richer Narrative Recaps</strong>
-                        <small>Weekly summaries, Narrative Nostalgia recaps &amp; formatted exports</small>
-                      </div>
-                    </div>
-                    <div class="p-feat-item">
-                      <span class="feat-icon pro-icon"><Layers :size="15" /></span>
-                      <div class="feat-copy">
-                        <strong>Unlimited Pins &amp; Routines</strong>
-                        <small>Supported multi-step routines &amp; priority Gemma model updates</small>
-                      </div>
-                    </div>
-                    <div class="p-feat-item">
-                      <span class="feat-icon pro-icon"><Cloud :size="15" /></span>
-                      <div class="feat-copy">
-                        <strong>Encrypted Drive Backup</strong>
-                        <small>Optional Drive appDataFolder sync with recovery key + founder support</small>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <ul class="p-feat-list pro-feat-grid">
+                  <li v-for="feat in PRICING_DATA.pro.features" :key="feat">
+                    <span class="feat-icon pro-icon"><CheckCircle2 :size="14" /></span>
+                    <span>{{ feat }}</span>
+                  </li>
+                </ul>
               </div>
 
               <div class="p-card-footer pro-footer">
@@ -711,10 +676,10 @@ const closeModal = () => {
                   :href="`mailto:monolog@notokens.co?subject=Monolog%20Pro%20${billingCycle === 'yearly' ? 'Yearly' : 'Monthly'}`"
                   class="plan-primary-cta"
                 >
-                  <span>Let’s talk Pro</span>
-                  <span class="arrow">↗</span>
+                  <span>{{ PRICING_DATA.pro.cta }}</span>
+                  <span class="arrow">↵</span>
                 </a>
-                <span class="savings-text-note">Canceling returns safely to Free without deleting existing memories.</span>
+                <span class="savings-text-note">{{ PRICING_DATA.footnote }}</span>
               </div>
             </div>
           </div>
@@ -2132,6 +2097,92 @@ const closeModal = () => {
   color: #c084fc;
 }
 
+.pro-feat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem 1.25rem;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.benefit-card {
+  border-radius: 18px;
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.benefit-tag {
+  font-size: 0.64rem;
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.benefit-card h4 {
+  font-size: 0.94rem;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.benefit-card p {
+  font-size: 0.78rem;
+  color: #9ca3af;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.site-cap-panel {
+  border-radius: 22px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.cap-panel-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.cap-panel-head h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+.cap-8-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
+}
+
+.cap-8-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  padding: 0.9rem;
+}
+
+.cap-8-item h4 {
+  font-size: 0.86rem;
+  color: #f8fafc;
+  margin: 0 0 0.3rem;
+}
+
+.cap-8-item p {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin: 0;
+  line-height: 1.45;
+}
+
 .pro-features-2col {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2459,7 +2510,9 @@ const closeModal = () => {
 
   .comp-matrix-grid,
   .privacy-pillars-grid,
-  .verified-strip {
+  .verified-strip,
+  .benefits-grid,
+  .cap-8-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -2468,7 +2521,8 @@ const closeModal = () => {
     grid-template-columns: 1fr;
   }
 
-  .pro-features-2col {
+  .pro-features-2col,
+  .pro-feat-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -2484,7 +2538,9 @@ const closeModal = () => {
 
   .comp-matrix-grid,
   .privacy-pillars-grid,
-  .verified-strip {
+  .verified-strip,
+  .benefits-grid,
+  .cap-8-grid {
     grid-template-columns: 1fr;
   }
 }

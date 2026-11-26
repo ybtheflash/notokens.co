@@ -40,49 +40,45 @@ const selectedItem = ref<LibraryItem | null>(null)
 
 const sampleDays = [
   {
-    date: '2026-11-26',
-    dateLabel: '26 Nov · Today',
-    title: 'Buildathon finals',
-    summary: '3:30 PM pitch rehearsal reminder, saved Demo Bay B venue move, and pitch opening notes.',
-    tags: ['Screenshot', 'Reminder', 'Note'],
-    sources: [
-      { kind: 'Screenshot · ML Kit OCR', label: 'Judging moved to Demo Bay B', body: 'Finalist portal update · 4:00 PM · Hall 2 · Bring HDMI adapter.' },
-      { kind: 'Reminder', label: 'Rehearse Monolog pitch', body: '3:30 PM · Verified by you' },
-      { kind: 'Note', label: 'Pitch opening', body: 'Keep the opening about staying inside WhatsApp without switching apps.' },
-    ],
-  },
-  {
     date: '2026-11-15',
-    dateLabel: '15 Nov · Sun',
+    dateLabel: 'Sunday, 15 November',
     title: 'A focused day',
-    summary: 'Study plans, coffee with Sam, and an evening reminder.',
-    tags: ['Note', 'Photo', 'Reminder'],
+    summary: 'Study plans, coffee with Sam, and an evening reminder to call Amma at 6:00 PM.',
+    tags: ['Notes', 'Photo', 'Reminder'],
     sources: [
-      { kind: 'Note', label: 'Library study plans', body: 'Meet at the library at four. Bring the notes.' },
-      { kind: 'Photo', label: 'Coffee with Sam', body: 'A photo saved from the afternoon coffee break.' },
-      { kind: 'Reminder', label: 'Call Amma', body: '6:00 PM · Verified by you' },
+      { kind: 'Morning reflection', label: 'A clear head', body: '8:30 AM · A clear head and a plan for the week.' },
+      { kind: 'Photo · 12:15 PM', label: 'Coffee with Sam', body: 'Photo & cafe notes saved from the afternoon coffee break.' },
+      { kind: 'OCR · 3:20 PM', label: 'Exam timetable', body: 'Screenshot with on-device ML Kit OCR.' },
+      { kind: 'Reminder · 6:00 PM', label: 'Call Amma', body: 'Reviewed by you · Ready when you are.' },
     ],
   },
   {
     date: '2026-11-14',
-    dateLabel: '14 Nov · Sat',
+    dateLabel: '14 Nov · Saturday',
     title: 'Small moments, kept',
     summary: 'An art walk, a voice note, and time to slow down.',
-    tags: ['Photo', 'Voice'],
+    tags: ['Photo', 'Audio Note'],
     sources: [
       { kind: 'Photo', label: 'Riverside art walk', body: 'A photo saved during the Saturday art walk.' },
-      { kind: 'Voice', label: 'On the way home', body: '“I took the long way home. Glad I did.”' },
+      { kind: 'Voice Note', label: 'On the way home', body: '“Took the long way home. Glad I did.”' },
     ],
+  },
+  {
+    date: '2026-11-13',
+    dateLabel: '13 Nov · Friday',
+    title: 'A little progress',
+    summary: 'A finished outline and weekend travel ticket saved via OCR.',
+    tags: ['Screenshot', 'Note'],
+    sources: [{ kind: 'Screenshot · OCR', label: 'Weekend getaway', body: 'HND → ITM · 24 May · Hotel Namba · Check-in at 3:00 PM.' }],
   },
 ]
 
 const libraryItems = ref<LibraryItem[]>([
-  { id: '0', type: 'Screenshot', title: 'Judging moved to Demo Bay B', detail: 'Hall 2 · 4:00 PM · Bring HDMI adapter. Voice note attached.', date: '26 Nov', meta: 'ML Kit OCR' },
   { id: '1', type: 'Photo', title: 'Riverside Art Walk', detail: 'A photo from the Saturday art walk by the river.', date: '14 Nov' },
   { id: '2', type: 'Photo', title: 'Coffee with Sam', detail: 'Saved from the afternoon coffee break.', date: '15 Nov' },
   { id: '3', type: 'Screenshot', title: 'Weekend getaway', detail: 'HND → ITM · 24 May · Hotel Namba · Check-in at 3:00 PM.', date: '13 Nov', meta: 'ML Kit OCR' },
   { id: '4', type: 'Voice', title: 'On the way home', detail: 'I took the long way home. Glad I did.', date: '14 Nov', meta: 'Audio Note' },
-  { id: '5', type: 'Note', title: 'Pitch opening', detail: 'Keep the opening about staying inside WhatsApp without switching apps.', date: '26 Nov' },
+  { id: '5', type: 'Note', title: 'Library study plans', detail: 'Meet at the library at four. Bring the notes.', date: '15 Nov' },
 ])
 
 const filteredDays = computed(() => {
@@ -118,7 +114,7 @@ const saveNewLibraryNote = () => {
   selectedItem.value = added
 }
 
-const activeDayNumbers = new Set([14, 15, 26])
+const activeDayNumbers = new Set([13, 14, 15])
 </script>
 
 <template>
@@ -156,45 +152,39 @@ const activeDayNumbers = new Set([14, 15, 26])
       </div>
     </div>
 
-    <!-- Right Interactive Companion Phone Device -->
+    <!-- Right Interactive Companion UI Card (Clean flat UI, no phone hardware bezel) -->
     <div class="explorer-phone">
-      <div class="ep-status font-mono">
-        <span>9:41</span>
-        <span class="ep-punch"></span>
-        <span>On-device · 5G</span>
-      </div>
-
       <div class="ep-header">
         <div class="ep-brand">
           <img src="/monolog/images/monolog-icon.png" alt="Monolog" />
           <strong>Monolog</strong>
         </div>
-        <span class="ep-badge">AES-256 Room</span>
+        <span class="ep-badge">Private · On-Device</span>
       </div>
 
       <!-- TAB 1: TODAY -->
       <div v-if="activeTab === 'Today'" class="ep-body">
         <div class="weather-pill">
           <span>24° · Partly cloudy (MET Norway)</span>
-          <strong>Thu · 26 Nov</strong>
+          <strong>Sun · 15 Nov</strong>
         </div>
         <h4 class="ep-page-heading">Your day, remembered.</h4>
         <div class="ep-card accent-card">
           <span class="ep-meta">TODAY'S JOURNAL</span>
-          <strong>Buildathon finals</strong>
-          <p>3:30 PM pitch rehearsal reminder, saved Demo Bay B venue move, and pitch opening notes.</p>
-          <button class="ep-action-link" @click="activeTab = 'Journal'; selectedDay = '2026-11-26'">Open day stream →</button>
+          <strong>A focused day</strong>
+          <p>Study plans in the library, coffee with Sam, and a reminder to call Amma at 6:00 PM.</p>
+          <button class="ep-action-link" @click="activeTab = 'Journal'; selectedDay = '2026-11-15'">Open day stream →</button>
         </div>
         <div class="ep-two-col">
           <div class="ep-card">
             <span class="ep-meta"><Clock :size="11" /> REMINDERS</span>
-            <strong>Rehearse pitch</strong>
-            <small>3:30 PM today</small>
+            <strong>Call Amma</strong>
+            <small>Today · 6:00 PM</small>
           </div>
           <div class="ep-card">
-            <span class="ep-meta">RECENT MEMORY</span>
-            <strong>Demo Bay B</strong>
-            <small>26 Nov · Finals Portal OCR</small>
+            <span class="ep-meta">MEMORY OF THE DAY</span>
+            <strong>Riverside Art Walk</strong>
+            <small>14 Nov · Saved photo</small>
           </div>
         </div>
       </div>
@@ -284,15 +274,15 @@ const activeDayNumbers = new Set([14, 15, 26])
 
           <template v-else>
             <div class="ep-two-col">
-              <button class="ep-card gallery-tile" @click="selectedDay = '2026-11-26'">
-                <div class="gal-preview bay-preview font-mono">HALL 2 · BAY B</div>
-                <strong>Demo Bay B Notice</strong>
-                <small>26 Nov · Screenshot OCR</small>
-              </button>
               <button class="ep-card gallery-tile" @click="selectedDay = '2026-11-15'">
                 <div class="gal-preview coffee-preview"><ImageIcon :size="15" /> Coffee Break</div>
                 <strong>Coffee with Sam</strong>
                 <small>15 Nov · Photo</small>
+              </button>
+              <button class="ep-card gallery-tile" @click="selectedDay = '2026-11-14'">
+                <div class="gal-preview bay-preview font-mono">RIVERSIDE · WALK</div>
+                <strong>Riverside Art Walk</strong>
+                <small>14 Nov · Photo</small>
               </button>
             </div>
           </template>
@@ -456,36 +446,21 @@ const activeDayNumbers = new Set([14, 15, 26])
   color: #94a3b8;
 }
 
-/* Interactive Companion App Phone */
+/* Interactive Companion App Card (No phone hardware frame) */
 .explorer-phone {
   width: 100%;
-  max-width: 370px;
+  max-width: 390px;
   margin: 0 auto;
-  height: 580px;
+  height: 540px;
   background: #f8fafc;
   color: #151823;
-  border-radius: 38px;
-  border: 3px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 25px 65px rgba(0, 0, 0, 0.75);
-  padding: 0.85rem 0.9rem 0.65rem;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.65);
+  padding: 0.9rem 0.95rem 0.7rem;
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
-}
-
-.ep-status {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.66rem;
-  color: #334155;
-}
-
-.ep-punch {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #0f172a;
 }
 
 .ep-header {
