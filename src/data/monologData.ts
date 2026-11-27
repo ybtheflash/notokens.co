@@ -323,10 +323,10 @@ export const PRICING_DATA = {
     cta: "Let's talk Pro",
   },
   team: {
-    name: 'Brokerage Team',
+    name: 'Team Plan',
     price: '₹1,299',
     period: 'per month for 5 Pro seats',
-    note: 'Proposed price after the free brokerage pilot.',
+    note: '* Proposed monthly price after the free team pilot.',
     contact: 'mailto:monolog@notokens.co?subject=Monolog%20Customised%20Package',
     cta: 'Contact us for a customised package',
   },

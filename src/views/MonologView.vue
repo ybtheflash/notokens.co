@@ -685,15 +685,15 @@ const closeModal = () => {
             </div>
           </div>
 
-          <article class="plan-card-wide team-plan frosted-glass-panel" aria-labelledby="team-plan-title">
+          <article class="plan-card-wide team-plan frosted-glass-panel" aria-labelledby="team-plan-title" aria-describedby="team-plan-note">
             <div class="p-card-top">
-              <h4 id="team-plan-title" class="p-tier-name">{{ PRICING_DATA.team.name }}</h4>
+              <h4 id="team-plan-title" class="p-tier-name">{{ PRICING_DATA.team.name }}<sup aria-hidden="true">*</sup></h4>
               <div class="p-price-block">
                 <div class="p-price-main">
                   <span class="p-price-val">{{ PRICING_DATA.team.price }}</span>
                   <span class="p-price-period">{{ PRICING_DATA.team.period }}</span>
                 </div>
-                <p class="p-billed-sub">{{ PRICING_DATA.team.note }}</p>
+                <p id="team-plan-note" class="p-billed-sub">{{ PRICING_DATA.team.note }}</p>
               </div>
             </div>
             <a :href="PRICING_DATA.team.contact" class="plan-ghost-btn">{{ PRICING_DATA.team.cta }}</a>
