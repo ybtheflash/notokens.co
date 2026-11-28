@@ -304,12 +304,13 @@ export const PRICING_DATA = {
   pro: {
     name: 'Monolog Pro',
     badge: 'A little extra possibility',
+    monthlyReferencePrice: '₹599',
     monthlyPrice: '₹299',
     monthlyPeriod: 'per month',
-    monthlyNote: 'Proposed monthly launch price. No payment is taken here.',
+    monthlyNote: 'Individual Pro pilot price.',
     yearlyPrice: '₹3,372',
     yearlyPeriod: 'per year',
-    yearlyNote: '₹281/month, billed yearly. Save ₹216 a year (about 6%).',
+    yearlyNote: '₹281/month, billed yearly. Save ₹216 versus 12 months at the pilot rate.',
     discountTag: '−6%',
     desc: 'Expanded VOX, writing tools, natural-language AI Ask search, and richer monthly recaps.',
     features: [
@@ -320,6 +321,14 @@ export const PRICING_DATA = {
       'Advanced routines and writing assistance',
     ],
     cta: "Let's talk Pro",
+  },
+  team: {
+    name: 'Team Plan',
+    price: '₹1,299',
+    period: 'per month for 5 Pro seats',
+    note: '* Proposed monthly price after the free team pilot.',
+    contact: 'mailto:monolog@notokens.co?subject=Monolog%20Customised%20Package',
+    cta: 'Contact us for a customised package',
   },
 }
 

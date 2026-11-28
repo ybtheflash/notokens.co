@@ -647,6 +647,7 @@ const closeModal = () => {
 
                 <div class="p-price-block">
                   <div class="p-price-main">
+                    <del v-if="billingCycle === 'monthly'" class="p-price-period">{{ PRICING_DATA.pro.monthlyReferencePrice }}</del>
                     <span class="p-price-val">
                       {{ billingCycle === 'yearly' ? PRICING_DATA.pro.yearlyPrice : PRICING_DATA.pro.monthlyPrice }}
                     </span>
@@ -683,6 +684,20 @@ const closeModal = () => {
               </div>
             </div>
           </div>
+
+          <article class="plan-card-wide team-plan frosted-glass-panel" aria-labelledby="team-plan-title" aria-describedby="team-plan-note">
+            <div class="p-card-top">
+              <h4 id="team-plan-title" class="p-tier-name">{{ PRICING_DATA.team.name }}</h4>
+              <div class="p-price-block">
+                <div class="p-price-main">
+                  <span class="p-price-val">{{ PRICING_DATA.team.price }}*</span>
+                  <span class="p-price-period">{{ PRICING_DATA.team.period }}</span>
+                </div>
+                <p id="team-plan-note" class="p-billed-sub">{{ PRICING_DATA.team.note }}</p>
+              </div>
+            </div>
+            <a :href="PRICING_DATA.team.contact" class="plan-ghost-btn">{{ PRICING_DATA.team.cta }}</a>
+          </article>
 
           <div class="pricing-bottom-bar">
             <div class="p-trust-item">
@@ -1964,6 +1979,12 @@ const closeModal = () => {
   display: grid;
   grid-template-columns: 320px 1fr;
   gap: 1.25rem;
+}
+
+.plan-card-wide.team-plan {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
 }
 
 .plan-card-wide {
